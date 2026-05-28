@@ -27,7 +27,12 @@ const SKILLS = [
   { name: "Git", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg" },
   { name: "Docker", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg" },
   { name: "C++", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg" },
-  { name: "Hugging Face", logo: "https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/1f917.svg" }
+  { name: "Hugging Face", logo: "https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/1f917.svg" },
+  { name: "Java", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg" },
+  { name: "MongoDB", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg" },
+  { name: "PostgreSQL", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg" },
+  { name: "SQL", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg" },
+  { name: "Oracle", logo: "https://unpkg.com/simple-icons@11.0.0/icons/oracle.svg" }
 ];
 
 export default function TechStackSection() {
