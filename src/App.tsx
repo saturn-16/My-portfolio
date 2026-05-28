@@ -4,6 +4,7 @@ import Navbar from "./components/Navbar";
 import WorksSection from "./components/WorksSection";
 import AboutSection from "./components/AboutSection";
 import OffDutySection from "./components/OffDutySection";
+import SmoothScroll from "./components/SmoothScroll";
 
 import ContactDrawer from "./components/ContactDrawer";
 import { ArrowUpRight, Copy, Check, Clock, Code } from "lucide-react";
@@ -40,6 +41,7 @@ export default function App() {
 
   return (
     <div className="w-full min-h-screen bg-pine text-[#1a1a1a] flex flex-col items-center">
+      <SmoothScroll />
       
       {/* Outer framing wrapper to feel like an elegant editorial poster */}
       <div className="w-full max-w-7xl px-4 py-6 md:py-10 flex flex-col gap-6 relative">
