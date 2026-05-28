@@ -1,84 +1,456 @@
-import { useRef } from "react";
-import { useScroll, useTransform, motion } from "motion/react";
-import { Award, Shield, CheckCircle, ArrowRight, ExternalLink, Bookmark } from "lucide-react";
+import { useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
+import { Award, Shield, CheckCircle, Bookmark, Sparkles, ExternalLink } from "lucide-react";
 
 export default function CertificateBookSection() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  
-  // Track scroll progress of this section
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"]
-  });
+  const [currentPage, setCurrentPage] = useState(0); // 0 (closed) to 4 (fully flipped)
 
-  // 1. Dynamic Rotational angles for the three flipping sheets (0 to -180 degrees)
-  const rotateY1 = useTransform(scrollYProgress, [0.12, 0.35], [0, -180]);
-  const rotateY2 = useTransform(scrollYProgress, [0.35, 0.58], [0, -180]);
-  const rotateY3 = useTransform(scrollYProgress, [0.58, 0.81], [0, -180]);
+  const maxPages = 4;
 
-  // 2. Dynamic z-index layering overrides to ensure turning pages stay layered correctly
-  const zIndex1 = useTransform(scrollYProgress, [0, 0.235, 0.236, 1], [10, 10, 1, 1]);
-  const zIndex2 = useTransform(scrollYProgress, [0, 0.465, 0.466, 1], [8, 8, 2, 2]);
-  const zIndex3 = useTransform(scrollYProgress, [0, 0.695, 0.696, 1], [6, 6, 3, 3]);
+  const handlePageClick = (direction: "next" | "prev") => {
+    if (direction === "next" && currentPage < maxPages) {
+      setCurrentPage((p) => p + 1);
+    } else if (direction === "prev" && currentPage > 0) {
+      setCurrentPage((p) => p - 1);
+    }
+  };
 
-  // 3. Dynamic soft page shadows as they flip
-  const shadowOpacity1 = useTransform(scrollYProgress, [0.12, 0.235, 0.35], [0, 0.4, 0]);
-  const shadowOpacity2 = useTransform(scrollYProgress, [0.35, 0.465, 0.58], [0, 0.4, 0]);
-  const shadowOpacity3 = useTransform(scrollYProgress, [0.58, 0.695, 0.81], [0, 0.4, 0]);
+  // Spring transition for the ultimate heavy, fluid, realistic 3D paper page flips
+  const flipTransition = {
+    type: "spring",
+    stiffness: 65,
+    damping: 17,
+    mass: 1.1
+  };
 
   return (
-    <section 
-      ref={containerRef} 
-      className="relative w-full h-[250vh] bg-[#efebe4] border-b border-sand"
-    >
-      {/* Sticky view frame */}
-      <div className="sticky top-0 h-screen w-full overflow-hidden flex flex-col justify-center items-center">
+    <section id="certificates" className="py-24 px-6 md:px-12 bg-[#efebe4] border-b border-sand flex flex-col items-center">
+      <div className="max-w-7xl w-full mx-auto flex flex-col items-center">
         
-        {/* Section Header overlay */}
-        <div className="absolute top-10 md:top-14 max-w-xl text-center space-y-2 z-30 px-6">
-          <span className="text-[10px] font-mono uppercase tracking-widest text-[#9d9282] block">
-            // REGISTRY SECURE DATABASE
-          </span>
-          <h2 className="text-3xl md:text-5xl font-oswald font-extrabold uppercase text-pine tracking-wide">
-            Verified Credentials
-          </h2>
-          <p className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider animate-pulse">
-            Scroll down to open album &amp; flip page spreads horizontally
-          </p>
+        {/* Section Header */}
+        <div className="flex flex-col xl:flex-row items-start xl:items-end justify-between gap-6 mb-16 w-full">
+          <div className="max-w-4xl">
+            <span className="text-xs font-mono uppercase tracking-widest text-pine-light block mb-2">
+              // CREDENTIAL REGISTRY
+            </span>
+            <h2 className="text-6xl md:text-[8rem] font-oswald font-extrabold uppercase text-pine tracking-tight leading-none mb-4">
+              Verified
+            </h2>
+            <h2 className="text-6xl md:text-[8rem] font-oswald font-extrabold uppercase text-pine tracking-tight leading-none">
+              Certifications
+            </h2>
+          </div>
+          
+          <div className="max-w-xs font-mono text-xs text-neutral-500 leading-relaxed xl:mb-2 border-l border-sand pl-4">
+            CLICK DIRECTLY ON THE LEFT OR RIGHT PAGES TO REALISTICALLY FLIP THE SPREADS AND BROWSE THROUGH THE SKILL CREDENTIALS.
+          </div>
         </div>
 
-        {/* 3D Scene Viewport */}
-        <div className="relative flex items-center justify-center w-full h-[520px] z-10 select-none perspective-[1800px]">
+        {/* 3D Scene Viewport (Click-to-Flip interactive container) */}
+        <div className="relative flex flex-col items-center justify-center w-full min-h-[500px] perspective-[2000px] select-none">
           
-          {/* 3D Book Container (scaled responsively for perfect mobile styling) */}
-          <div className="relative w-[340px] h-[400px] sm:w-[620px] sm:h-[420px] md:w-[720px] md:h-[450px] transform-style-3d scale-[0.62] sm:scale-80 md:scale-95 lg:scale-100 transition-all duration-300">
-            
+          {/* Main Book Object */}
+          <div 
+            className="relative w-[330px] h-[390px] sm:w-[600px] sm:h-[420px] md:w-[720px] md:h-[460px] transform-style-3d scale-[0.62] sm:scale-80 md:scale-95 lg:scale-100 transition-all duration-300 flex items-center justify-center"
+          >
+            {/* Spine Center Line Shadow Overlay */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[2px] h-[98%] bg-black/35 z-50 pointer-events-none filter blur-xs shadow-2xl" />
+
             {/* ========================================================================= */}
-            {/* SHEET 1: FRONT COVER / INSIDE COVER */}
+            {/* STATIC BACK COVER / BASE SHEET (Always rests at bottom-right) */}
+            {/* ========================================================================= */}
+            <div 
+              className="absolute inset-0 w-full h-full bg-[#04251b] border-2 border-amber-500/20 rounded-r-2xl p-6 sm:p-8 flex flex-col justify-between shadow-2xl z-0"
+              style={{ transform: "translateZ(-4px)" }}
+            >
+              {/* Spine lining */}
+              <div className="absolute top-0 left-0 w-4 h-full bg-black/40 border-r border-amber-500/10 rounded-r-xs shadow-inner" />
+              
+              <div className="flex justify-between items-start pl-6">
+                <Bookmark className="w-8 h-8 text-amber-500/60" />
+                <span className="text-[9px] font-mono text-[#dfefe4]/30 tracking-widest uppercase">REGISTRY VERIFIED // SECURE</span>
+              </div>
+
+              <div className="space-y-4 pl-6 text-left">
+                <span className="text-[10px] font-mono uppercase tracking-widest text-[#10be7e] font-bold block">
+                  // VERIFICATION COMPLETION
+                </span>
+                <h3 className="text-4xl font-oswald text-cream font-extrabold uppercase tracking-wide leading-none">
+                  CREDENTIALS<br />REGISTERED.
+                </h3>
+                <div className="w-16 h-[2px] bg-amber-500/40" />
+                <p className="text-[10px] font-mono text-[#dfefe4]/60 uppercase tracking-widest leading-relaxed">
+                  SECURE COMPLIANCE ESTABLISHED.<br />
+                  ALL VERIFIED SECTIONS ENCRYPTED.
+                </p>
+              </div>
+
+              <div className="flex justify-between items-center pl-6 font-mono text-[9px] text-[#dfefe4]/40 uppercase tracking-widest border-t border-[#dfefe4]/10 pt-4">
+                <span>SYSTEM COMPLETED // EST. 2026</span>
+                <span className="text-emerald-400 font-bold flex items-center gap-1">
+                  SECURED <CheckCircle className="w-3.5 h-3.5" />
+                </span>
+              </div>
+            </div>
+
+            {/* ========================================================================= */}
+            {/* SHEET 4: GOOGLE GENERATIVE AI (Google Cloud Skills Boost) / VERIFICATION INDEX */}
             {/* ========================================================================= */}
             <motion.div
+              animate={{ rotateY: currentPage >= 4 ? -178 : 0 }}
+              transition={flipTransition}
               style={{
-                transform: useTransform(rotateY1, (r) => `rotateY(${r}deg)`),
                 transformOrigin: "left center",
-                zIndex: zIndex1,
+                zIndex: currentPage >= 4 ? 4 : 4,
               }}
-              className="absolute inset-0 w-full h-full transform-style-3d transition-shadow duration-300"
+              onClick={() => handlePageClick(currentPage >= 4 ? "prev" : "next")}
+              className="absolute top-0 right-0 w-1/2 h-full transform-style-3d cursor-pointer shadow-md origin-left"
             >
-              {/* [FRONT FACE]: Outer Leather Cover */}
+              {/* [FRONT FACE] - Google Cloud Skills Boost: Google GenAI Certificate */}
               <div 
                 style={{ backfaceVisibility: "hidden" }}
-                className="absolute inset-0 w-full h-full bg-[#04251b] border-2 border-amber-500/20 rounded-r-2xl p-8 flex flex-col justify-between shadow-lg z-20"
+                className="absolute inset-0 w-full h-full bg-[#fdfcfe] border border-sand border-l-0 rounded-r-2xl p-6 flex flex-col justify-between z-20 shadow-lg"
               >
-                {/* Book Spine border line ornament */}
-                <div className="absolute top-0 left-0 w-3 h-full bg-black/40 border-r border-amber-500/10 rounded-r-sm" />
+                {/* Crease shadow */}
+                <div className="absolute top-0 left-0 w-6 h-full bg-gradient-to-r from-black/10 to-transparent pointer-events-none" />
+
+                {/* Header */}
+                <div className="flex justify-between items-start">
+                  <div className="flex items-center gap-2">
+                    <div className="w-9 h-9 bg-teal-50 rounded-xl flex items-center justify-center border border-teal-100 text-teal-600 font-bold text-xs shadow-xs">
+                      G
+                    </div>
+                    <div>
+                      <span className="text-[8px] font-mono uppercase tracking-widest text-neutral-400 block">// GOOGLE CLOUD</span>
+                      <h4 className="text-[11px] font-bold font-mono text-pine uppercase tracking-wider leading-tight">Generative AI Skills</h4>
+                    </div>
+                  </div>
+                  <span className="text-[9px] font-mono font-semibold text-pine bg-pine/5 px-2 py-0.5 rounded-full border border-sand">2025</span>
+                </div>
+
+                {/* Certificate Mock Box */}
+                <div className="p-4 rounded-xl bg-neutral-50 border border-sand relative overflow-hidden flex-1 my-3.5 flex flex-col justify-between">
+                  <div className="absolute right-2 bottom-2 opacity-5 pointer-events-none">
+                    <Sparkles className="w-20 h-20 text-pine" />
+                  </div>
+                  
+                  <div className="space-y-1.5 text-left">
+                    <p className="text-[9px] font-mono uppercase tracking-wider text-neutral-400 font-semibold">// CREDENTIAL SYNOPSIS</p>
+                    <p className="text-[11px] font-mono text-neutral-600 leading-normal">
+                      Verifies skills in building **Generative AI applications, Large Language Models (LLMs), attention mechanisms, and training custom neural architectures** using Google Cloud.
+                    </p>
+                  </div>
+
+                  <div className="flex flex-wrap gap-1 pt-2.5 border-t border-neutral-100">
+                    {["Google Cloud", "LLMs", "Generative AI", "Transformers"].map(tag => (
+                      <span key={tag} className="text-[7.5px] font-mono bg-white border border-sand px-1.5 py-0.5 rounded text-neutral-500">{tag}</span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Footer */}
+                <div className="flex justify-between items-center font-mono text-[8px] text-[#9d9282] uppercase tracking-widest border-t border-neutral-100 pt-2.5">
+                  <span>Google Cloud Boost</span>
+                  <span className="text-teal-600 font-bold flex items-center gap-1">PAGE 4</span>
+                </div>
+              </div>
+
+              {/* [BACK FACE] - Inside Back Lining Page (flipped to Left Side) */}
+              <div 
+                style={{
+                  backfaceVisibility: "hidden",
+                  transform: "rotateY(180deg)",
+                }}
+                className="absolute inset-0 w-full h-full bg-[#fcfbfa] border border-sand border-r-0 rounded-l-2xl p-6 flex flex-col justify-between shadow-inner z-10"
+              >
+                {/* Crease shadow */}
+                <div className="absolute top-0 right-0 w-6 h-full bg-gradient-to-l from-black/10 to-transparent pointer-events-none" />
+
+                <div className="space-y-4 text-left">
+                  <span className="text-[8px] font-mono uppercase tracking-widest text-neutral-400 block">// CREDENTIAL INDEX</span>
+                  <h4 className="text-xl font-oswald text-pine font-extrabold uppercase tracking-wide">
+                    VERIFICATION PORTAL
+                  </h4>
+                  <p className="text-[11px] font-mono text-neutral-600 leading-relaxed max-w-xs">
+                    All credentials listed in this ledger have been officially verified. Contact for full digital cryptographic proof PDFs and verification links.
+                  </p>
+                </div>
+
+                {/* Micro metrics */}
+                <div className="p-4 rounded-xl bg-white border border-sand space-y-2 text-left">
+                  <p className="text-[9px] font-mono text-neutral-400 uppercase font-semibold">// ACCREDITATION STATS</p>
+                  <p className="text-[10px] font-mono text-pine font-bold flex items-center gap-1.5">
+                    <CheckCircle className="w-3.5 h-3.5 text-[#10be7e]" /> Cryptographically Signed (256-bit)
+                  </p>
+                  <p className="text-[10px] font-mono text-pine font-bold flex items-center gap-1.5">
+                    <CheckCircle className="w-3.5 h-3.5 text-[#10be7e]" /> Google &amp; AWS Partner Aligned
+                  </p>
+                </div>
+
+                <div className="flex justify-between items-center font-mono text-[8px] text-[#9d9282] uppercase tracking-widest border-t border-neutral-100 pt-2.5">
+                  <span>Ledger index verified</span>
+                  <span className="text-emerald-600 font-bold flex items-center gap-1">PAGE 5</span>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* ========================================================================= */}
+            {/* SHEET 3: AWS CLOUD PRACTITIONER / CISCO CYBERSECURITY */}
+            {/* ========================================================================= */}
+            <motion.div
+              animate={{ rotateY: currentPage >= 3 ? -178 : 0 }}
+              transition={flipTransition}
+              style={{
+                transformOrigin: "left center",
+                zIndex: currentPage >= 3 ? 3 : 6,
+              }}
+              onClick={() => handlePageClick(currentPage >= 3 ? "prev" : "next")}
+              className="absolute top-0 right-0 w-1/2 h-full transform-style-3d cursor-pointer shadow-md origin-left"
+            >
+              {/* [FRONT FACE] - AWS Cloud Practitioner */}
+              <div 
+                style={{ backfaceVisibility: "hidden" }}
+                className="absolute inset-0 w-full h-full bg-[#fdfcfe] border border-sand border-l-0 rounded-r-2xl p-6 flex flex-col justify-between z-20 shadow-lg"
+              >
+                {/* Crease shadow */}
+                <div className="absolute top-0 left-0 w-6 h-full bg-gradient-to-r from-black/10 to-transparent pointer-events-none" />
+
+                {/* Header */}
+                <div className="flex justify-between items-start">
+                  <div className="flex items-center gap-2">
+                    <div className="w-9 h-9 bg-orange-50 rounded-xl flex items-center justify-center border border-orange-100 text-orange-600 font-bold text-xs shadow-xs">
+                      AWS
+                    </div>
+                    <div>
+                      <span className="text-[8px] font-mono uppercase tracking-widest text-neutral-400 block">// CLOUD COMPUTING</span>
+                      <h4 className="text-[11px] font-bold font-mono text-pine uppercase tracking-wider leading-tight">Certified Practitioner</h4>
+                    </div>
+                  </div>
+                  <span className="text-[9px] font-mono font-semibold text-pine bg-pine/5 px-2 py-0.5 rounded-full border border-sand">2025</span>
+                </div>
+
+                {/* Certificate Mock Box */}
+                <div className="p-4 rounded-xl bg-neutral-50 border border-sand relative overflow-hidden flex-1 my-3.5 flex flex-col justify-between">
+                  <div className="absolute right-2 bottom-2 opacity-5 pointer-events-none">
+                    <Award className="w-20 h-20 text-pine" />
+                  </div>
+
+                  <div className="space-y-1.5 text-left">
+                    <p className="text-[9px] font-mono uppercase tracking-wider text-neutral-400 font-semibold">// CREDENTIAL SYNOPSIS</p>
+                    <p className="text-[11px] font-mono text-neutral-600 leading-normal">
+                      Validates core understanding of **AWS global cloud infrastructure, server computing (EC2), database management (S3, RDS), IAM secure compliance, and billing configurations**.
+                    </p>
+                  </div>
+
+                  <div className="flex flex-wrap gap-1 pt-2.5 border-t border-neutral-100">
+                    {["IAM Security", "EC2 Compute", "S3 Storage", "AWS Billing"].map(tag => (
+                      <span key={tag} className="text-[7.5px] font-mono bg-white border border-sand px-1.5 py-0.5 rounded text-neutral-500">{tag}</span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Footer */}
+                <div className="flex justify-between items-center font-mono text-[8px] text-[#9d9282] uppercase tracking-widest border-t border-neutral-100 pt-2.5">
+                  <span>AWS verification</span>
+                  <span className="text-orange-600 font-bold flex items-center gap-1">PAGE 3</span>
+                </div>
+              </div>
+
+              {/* [BACK FACE] - Cisco Introduction to Cybersecurity */}
+              <div 
+                style={{
+                  backfaceVisibility: "hidden",
+                  transform: "rotateY(180deg)",
+                }}
+                className="absolute inset-0 w-full h-full bg-[#fcfbfa] border border-sand border-r-0 rounded-l-2xl p-6 flex flex-col justify-between shadow-inner z-10"
+              >
+                {/* Crease shadow */}
+                <div className="absolute top-0 right-0 w-6 h-full bg-gradient-to-l from-black/10 to-transparent pointer-events-none" />
+
+                {/* Header */}
+                <div className="flex justify-between items-start">
+                  <div className="flex items-center gap-2">
+                    <div className="w-9 h-9 bg-indigo-50 rounded-xl flex items-center justify-center border border-indigo-100 text-indigo-600 font-bold text-xs shadow-xs animate-pulse">
+                      CISCO
+                    </div>
+                    <div>
+                      <span className="text-[8px] font-mono uppercase tracking-widest text-neutral-400 block">// CYBERSECURITY</span>
+                      <h4 className="text-[11px] font-bold font-mono text-pine uppercase tracking-wider leading-tight">Intro to Cyber Defense</h4>
+                    </div>
+                  </div>
+                  <span className="text-[9px] font-mono font-semibold text-pine bg-pine/5 px-2 py-0.5 rounded-full border border-sand">2024</span>
+                </div>
+
+                {/* Certificate Mock Box */}
+                <div className="p-4 rounded-xl bg-neutral-50 border border-sand relative overflow-hidden flex-1 my-3.5 flex flex-col justify-between">
+                  <div className="absolute right-2 bottom-2 opacity-5 pointer-events-none">
+                    <Shield className="w-20 h-20 text-pine" />
+                  </div>
+
+                  <div className="space-y-1.5 text-left">
+                    <p className="text-[9px] font-mono uppercase tracking-wider text-neutral-400 font-semibold">// CREDENTIAL SYNOPSIS</p>
+                    <p className="text-[11px] font-mono text-neutral-600 leading-normal">
+                      Validates baseline understanding of **network threat vectors monitoring, endpoint defense strategies, cryptography protection algorithms, and digital forensics**.
+                    </p>
+                  </div>
+
+                  <div className="flex flex-wrap gap-1 pt-2.5 border-t border-neutral-100">
+                    {["Net Security", "Cryptography", "Endpoint Defense", "Threat Intel"].map(tag => (
+                      <span key={tag} className="text-[7.5px] font-mono bg-white border border-sand px-1.5 py-0.5 rounded text-neutral-500">{tag}</span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Footer */}
+                <div className="flex justify-between items-center font-mono text-[8px] text-[#9d9282] uppercase tracking-widest border-t border-neutral-100 pt-2.5">
+                  <span>Cisco Academy</span>
+                  <span className="text-indigo-600 font-bold flex items-center gap-1">PAGE 4</span>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* ========================================================================= */}
+            {/* SHEET 2: GOOGLE IT SUPPORT / GOOGLE GENERATIVE AI (Foundations) */}
+            {/* ========================================================================= */}
+            <motion.div
+              animate={{ rotateY: currentPage >= 2 ? -178 : 0 }}
+              transition={flipTransition}
+              style={{
+                transformOrigin: "left center",
+                zIndex: currentPage >= 2 ? 2 : 8,
+              }}
+              onClick={() => handlePageClick(currentPage >= 2 ? "prev" : "next")}
+              className="absolute top-0 right-0 w-1/2 h-full transform-style-3d cursor-pointer shadow-md origin-left"
+            >
+              {/* [FRONT FACE] - Google IT Support Professional Certificate */}
+              <div 
+                style={{ backfaceVisibility: "hidden" }}
+                className="absolute inset-0 w-full h-full bg-[#fdfcfe] border border-sand border-l-0 rounded-r-2xl p-6 flex flex-col justify-between z-20 shadow-lg"
+              >
+                {/* Crease shadow */}
+                <div className="absolute top-0 left-0 w-6 h-full bg-gradient-to-r from-black/10 to-transparent pointer-events-none" />
+
+                {/* Header */}
+                <div className="flex justify-between items-start">
+                  <div className="flex items-center gap-2">
+                    <div className="w-9 h-9 bg-blue-50 rounded-xl flex items-center justify-center border border-blue-100 text-blue-600 font-bold text-xs shadow-xs">
+                      G
+                    </div>
+                    <div>
+                      <span className="text-[8px] font-mono uppercase tracking-widest text-neutral-400 block">// GOOGLE CAREER</span>
+                      <h4 className="text-[11px] font-bold font-mono text-pine uppercase tracking-wider leading-tight">IT Support Professional</h4>
+                    </div>
+                  </div>
+                  <span className="text-[9px] font-mono font-semibold text-pine bg-pine/5 px-2 py-0.5 rounded-full border border-sand">2025</span>
+                </div>
+
+                {/* Certificate Mock Box */}
+                <div className="p-4 rounded-xl bg-neutral-50 border border-sand relative overflow-hidden flex-1 my-3.5 flex flex-col justify-between">
+                  <div className="absolute right-2 bottom-2 opacity-5 pointer-events-none">
+                    <Award className="w-20 h-20 text-pine" />
+                  </div>
+                  
+                  <div className="space-y-1.5 text-left">
+                    <p className="text-[9px] font-mono uppercase tracking-wider text-neutral-400 font-semibold">// CREDENTIAL SYNOPSIS</p>
+                    <p className="text-[11px] font-mono text-neutral-600 leading-normal">
+                      Validates core technical skills in **system administration, network configuration, Linux command line protocols, operational security, and debugging automation**.
+                    </p>
+                  </div>
+
+                  <div className="flex flex-wrap gap-1 pt-2.5 border-t border-neutral-100">
+                    {["Sys Admin", "Linux CLI", "Troubleshooting", "Active Directory"].map(tag => (
+                      <span key={tag} className="text-[7.5px] font-mono bg-white border border-sand px-1.5 py-0.5 rounded text-neutral-500">{tag}</span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Footer */}
+                <div className="flex justify-between items-center font-mono text-[8px] text-[#9d9282] uppercase tracking-widest border-t border-neutral-100 pt-2.5">
+                  <span>Google Professional</span>
+                  <span className="text-blue-600 font-bold flex items-center gap-1">PAGE 1</span>
+                </div>
+              </div>
+
+              {/* [BACK FACE] - Google Generative AI Certificate (Foundations) */}
+              <div 
+                style={{
+                  backfaceVisibility: "hidden",
+                  transform: "rotateY(180deg)",
+                }}
+                className="absolute inset-0 w-full h-full bg-[#fcfbfa] border border-sand border-r-0 rounded-l-2xl p-6 flex flex-col justify-between shadow-inner z-10"
+              >
+                {/* Crease shadow */}
+                <div className="absolute top-0 right-0 w-6 h-full bg-gradient-to-l from-black/10 to-transparent pointer-events-none" />
+
+                {/* Header */}
+                <div className="flex justify-between items-start">
+                  <div className="flex items-center gap-2">
+                    <div className="w-9 h-9 bg-emerald-50 rounded-xl flex items-center justify-center border border-emerald-100 text-emerald-600 font-bold text-xs shadow-xs animate-pulse">
+                      AI
+                    </div>
+                    <div>
+                      <span className="text-[8px] font-mono uppercase tracking-widest text-neutral-400 block">// GOOGLE LEARNING</span>
+                      <h4 className="text-[11px] font-bold font-mono text-pine uppercase tracking-wider leading-tight">Generative AI Foundations</h4>
+                    </div>
+                  </div>
+                  <span className="text-[9px] font-mono font-semibold text-pine bg-pine/5 px-2 py-0.5 rounded-full border border-sand">2025</span>
+                </div>
+
+                {/* Certificate Mock Box */}
+                <div className="p-4 rounded-xl bg-neutral-50 border border-sand relative overflow-hidden flex-1 my-3.5 flex flex-col justify-between">
+                  <div className="absolute right-2 bottom-2 opacity-5 pointer-events-none">
+                    <Shield className="w-20 h-20 text-pine" />
+                  </div>
+
+                  <div className="space-y-1.5 text-left">
+                    <p className="text-[9px] font-mono uppercase tracking-wider text-neutral-400 font-semibold">// CREDENTIAL SYNOPSIS</p>
+                    <p className="text-[11px] font-mono text-neutral-600 leading-normal">
+                      Validates core understanding of **Large Language Models (LLMs), attention mechanism, image generation pipelines, prompt principles, and model alignment**.
+                    </p>
+                  </div>
+
+                  <div className="flex flex-wrap gap-1 pt-2.5 border-t border-neutral-100">
+                    {["LLMs", "Prompt Basics", "Diffusion Models", "AI Alignment"].map(tag => (
+                      <span key={tag} className="text-[7.5px] font-mono bg-white border border-sand px-1.5 py-0.5 rounded text-neutral-500">{tag}</span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Footer */}
+                <div className="flex justify-between items-center font-mono text-[8px] text-[#9d9282] uppercase tracking-widest border-t border-neutral-100 pt-2.5">
+                  <span>Google AI Boost</span>
+                  <span className="text-emerald-600 font-bold flex items-center gap-1">PAGE 2</span>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* ========================================================================= */}
+            {/* SHEET 1: FRONT COVER / INDEX LIST */}
+            {/* ========================================================================= */}
+            <motion.div
+              animate={{ rotateY: currentPage >= 1 ? -178 : 0 }}
+              transition={flipTransition}
+              style={{
+                transformOrigin: "left center",
+                zIndex: currentPage >= 1 ? 1 : 10,
+              }}
+              onClick={() => handlePageClick(currentPage >= 1 ? "prev" : "next")}
+              className="absolute top-0 right-0 w-1/2 h-full transform-style-3d cursor-pointer shadow-md origin-left"
+            >
+              {/* [FRONT FACE] - Outer Hardcover Cover (Embossed gold lettering) */}
+              <div 
+                style={{ backfaceVisibility: "hidden" }}
+                className="absolute inset-0 w-full h-full bg-[#04251b] border-2 border-amber-500/20 rounded-r-2xl p-6 sm:p-8 flex flex-col justify-between shadow-2xl z-20"
+              >
+                {/* Book Spine visual binding */}
+                <div className="absolute top-0 left-0 w-4 h-full bg-black/40 border-r border-amber-500/10 rounded-r-xs shadow-inner shadow-black/80" />
                 
-                {/* Cover Details */}
-                <div className="flex justify-between items-start pl-4">
+                <div className="flex justify-between items-start pl-6">
                   <Bookmark className="w-8 h-8 text-amber-500/60" />
                   <span className="text-[9px] font-mono text-amber-500/40 tracking-widest uppercase">REG. CODE // 1612</span>
                 </div>
 
-                <div className="space-y-4 pl-4 text-left">
+                <div className="space-y-4 pl-6 text-left">
                   <span className="text-[10px] font-mono uppercase tracking-widest text-[#10be7e] font-bold block">
                     // CONFIDENTIAL ALBUM
                   </span>
@@ -91,318 +463,80 @@ export default function CertificateBookSection() {
                   </p>
                 </div>
 
-                <div className="flex justify-between items-center pl-4 font-mono text-[9px] text-[#dfefe4]/40 uppercase tracking-widest border-t border-[#dfefe4]/10 pt-4">
+                <div className="flex justify-between items-center pl-6 font-mono text-[9px] text-[#dfefe4]/40 uppercase tracking-widest border-t border-[#dfefe4]/10 pt-4">
                   <span>EST. 2026 // INDIA</span>
-                  <span>TAP TO FLIP →</span>
+                  <span className="text-amber-500 font-bold animate-pulse">CLICK TO OPEN →</span>
                 </div>
               </div>
 
-              {/* [BACK FACE]: Inside Left Lining Page (appears on left side when flipped) */}
+              {/* [BACK FACE] - Inside Left Index Page */}
               <div 
                 style={{
                   backfaceVisibility: "hidden",
                   transform: "rotateY(180deg)",
                 }}
-                className="absolute inset-0 w-full h-full bg-[#fcfbfa] border border-sand rounded-l-2xl p-8 flex flex-col justify-between shadow-inner z-10"
+                className="absolute inset-0 w-full h-full bg-[#fcfbfa] border border-sand border-r-0 rounded-l-2xl p-6 flex flex-col justify-between shadow-inner z-10"
               >
-                {/* Page spine shade shadow overlay */}
-                <div className="absolute top-0 right-0 w-6 h-full bg-gradient-to-l from-black/10 to-transparent pointer-events-none rounded-l-sm" />
+                {/* Crease shadow */}
+                <div className="absolute top-0 right-0 w-6 h-full bg-gradient-to-l from-black/10 to-transparent pointer-events-none" />
 
                 <div className="space-y-4 text-left">
-                  <span className="text-[9px] font-mono uppercase tracking-widest text-neutral-400 block">// INDEX REGISTER</span>
+                  <span className="text-[8px] font-mono uppercase tracking-widest text-neutral-400 block">// INDEX REGISTER</span>
                   <h4 className="text-2xl font-oswald text-pine font-extrabold uppercase tracking-wide">
-                    TABLE OF CREDENTIALS
+                    TABLE OF SPREADS
                   </h4>
                   <p className="text-[11px] font-mono text-neutral-600 leading-relaxed max-w-xs">
-                    This verified album compiles certified credentials, verifying expertise in full-stack development, cloud security compliance, and AI threat detection models.
+                    This verified album compiles certified credentials, verifying expertise in full-stack engineering, cloud security compliance, and AI threat architectures.
                   </p>
                 </div>
 
-                <div className="space-y-3 font-mono text-[10px] text-neutral-500 uppercase tracking-wider pl-4 border-l border-sand">
+                <div className="space-y-2 font-mono text-[10px] text-neutral-500 uppercase tracking-wider pl-4 border-l border-sand">
                   <div className="flex justify-between border-b border-neutral-100 pb-1.5">
                     <span>1. Google IT Professional</span>
-                    <span className="text-emerald-600 font-bold">VERIFIED</span>
+                    <span className="text-emerald-600 font-bold">PAGE 1</span>
                   </div>
                   <div className="flex justify-between border-b border-neutral-100 pb-1.5">
                     <span>2. Google Generative AI</span>
-                    <span className="text-emerald-600 font-bold">VERIFIED</span>
+                    <span className="text-emerald-600 font-bold">PAGE 2</span>
                   </div>
                   <div className="flex justify-between border-b border-neutral-100 pb-1.5">
                     <span>3. AWS Cloud Practitioner</span>
-                    <span className="text-emerald-600 font-bold">VERIFIED</span>
+                    <span className="text-emerald-600 font-bold">PAGE 3</span>
                   </div>
                   <div className="flex justify-between pb-1">
                     <span>4. Cisco Cybersecurity</span>
-                    <span className="text-emerald-600 font-bold">VERIFIED</span>
+                    <span className="text-emerald-600 font-bold">PAGE 4</span>
                   </div>
                 </div>
 
-                <span className="text-[9px] font-mono text-neutral-400 text-right block tracking-widest uppercase">PAGE I // OVERVIEW</span>
+                <span className="text-[8px] font-mono text-neutral-400 text-right block tracking-widest uppercase">PAGE I // TABLE OF SPREADS</span>
               </div>
             </motion.div>
-
-            {/* ========================================================================= */}
-            {/* SHEET 2: GOOGLE IT SUPPORT / GOOGLE GENERATIVE AI */}
-            {/* ========================================================================= */}
-            <motion.div
-              style={{
-                transform: useTransform(rotateY2, (r) => `rotateY(${r}deg)`),
-                transformOrigin: "left center",
-                zIndex: zIndex2,
-              }}
-              className="absolute inset-0 w-full h-full transform-style-3d transition-shadow duration-300"
-            >
-              {/* [FRONT FACE]: Certificate 1 - Google IT Support (appears on right before flip) */}
-              <div 
-                style={{ backfaceVisibility: "hidden" }}
-                className="absolute inset-0 w-full h-full bg-[#fdfcfe] border border-sand rounded-r-2xl p-6 sm:p-8 flex flex-col justify-between shadow-md z-20"
-              >
-                {/* Spine shade */}
-                <div className="absolute top-0 left-0 w-6 h-full bg-gradient-to-r from-black/10 to-transparent pointer-events-none rounded-r-sm" />
-
-                {/* Badge Logo and Header */}
-                <div className="flex justify-between items-start">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center border border-blue-100 text-blue-600 font-bold text-base shadow-xs">
-                      G
-                    </div>
-                    <div>
-                      <span className="text-[9px] font-mono uppercase tracking-widest text-neutral-400 block">// GOOGLE CAREER</span>
-                      <h4 className="text-base font-bold font-mono text-pine uppercase tracking-wider">IT Support Professional</h4>
-                    </div>
-                  </div>
-                  <span className="text-xs font-mono font-semibold text-pine bg-pine/5 px-2.5 py-1 rounded-full border border-sand shadow-xs">2025</span>
-                </div>
-
-                {/* Certificate Mock Box */}
-                <div className="p-4 rounded-2xl bg-neutral-50/80 border border-sand relative overflow-hidden flex-1 my-4 flex flex-col justify-between">
-                  {/* Decorative stamp watermark */}
-                  <div className="absolute right-3 bottom-3 opacity-10 pointer-events-none">
-                    <Award className="w-24 h-24 text-pine" />
-                  </div>
-                  
-                  <div className="space-y-2 text-left">
-                    <p className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 font-semibold">// CREDENTIAL DETAILS</p>
-                    <p className="text-[11px] font-mono text-neutral-600 leading-normal">
-                      Verifies core technical skills in **system administration, network configuration, troubleshooting protocols, customer service automation, and operational security architectures**.
-                    </p>
-                  </div>
-
-                  <div className="flex flex-wrap gap-1.5 pt-3 border-t border-neutral-100">
-                    {["Sys Admin", "Networking", "Troubleshooting", "Security", "Linux"].map(tag => (
-                      <span key={tag} className="text-[8px] font-mono bg-white border border-sand px-2 py-0.5 rounded text-neutral-500">{tag}</span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Footer Action */}
-                <div className="flex justify-between items-center font-mono text-[9px] text-[#9d9282] uppercase tracking-widest border-t border-neutral-100 pt-3">
-                  <span>Google IT Support Registry</span>
-                  <span className="text-emerald-600 font-bold flex items-center gap-1">PAGE II // ACTIVE</span>
-                </div>
-              </div>
-
-              {/* [BACK FACE]: Certificate 2 - Google Generative AI (appears on left when flipped) */}
-              <div 
-                style={{
-                  backfaceVisibility: "hidden",
-                  transform: "rotateY(180deg)",
-                }}
-                className="absolute inset-0 w-full h-full bg-[#fcfbfa] border border-sand rounded-l-2xl p-6 sm:p-8 flex flex-col justify-between shadow-inner z-10"
-              >
-                {/* Spine shade */}
-                <div className="absolute top-0 right-0 w-6 h-full bg-gradient-to-l from-black/10 to-transparent pointer-events-none rounded-l-sm" />
-
-                {/* Header */}
-                <div className="flex justify-between items-start">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-teal-50 rounded-xl flex items-center justify-center border border-teal-100 text-teal-600 font-bold text-base shadow-xs">
-                      AI
-                    </div>
-                    <div>
-                      <span className="text-[9px] font-mono uppercase tracking-widest text-neutral-400 block">// GOOGLE CLOUD</span>
-                      <h4 className="text-base font-bold font-mono text-pine uppercase tracking-wider">Generative AI Specialist</h4>
-                    </div>
-                  </div>
-                  <span className="text-xs font-mono font-semibold text-pine bg-pine/5 px-2.5 py-1 rounded-full border border-sand shadow-xs">2025</span>
-                </div>
-
-                {/* Certificate Mock Box */}
-                <div className="p-4 rounded-2xl bg-neutral-50/80 border border-sand relative overflow-hidden flex-1 my-4 flex flex-col justify-between">
-                  <div className="absolute right-3 bottom-3 opacity-10 pointer-events-none">
-                    <Shield className="w-24 h-24 text-pine" />
-                  </div>
-
-                  <div className="space-y-2 text-left">
-                    <p className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 font-semibold">// CREDENTIAL DETAILS</p>
-                    <p className="text-[11px] font-mono text-neutral-600 leading-normal">
-                      Verifies competency in **Large Language Models (LLMs), attention architectures, prompt engineering guidelines, encoder-decoder models, and deploying ethical/responsible AI systems**.
-                    </p>
-                  </div>
-
-                  <div className="flex flex-wrap gap-1.5 pt-3 border-t border-neutral-100">
-                    {["LLMs", "Prompt Eng", "Transformers", "Ethical AI", "Model Tuning"].map(tag => (
-                      <span key={tag} className="text-[8px] font-mono bg-white border border-sand px-2 py-0.5 rounded text-neutral-500">{tag}</span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Footer */}
-                <div className="flex justify-between items-center font-mono text-[9px] text-[#9d9282] uppercase tracking-widest border-t border-neutral-100 pt-3">
-                  <span>Google AI Registry</span>
-                  <span className="text-emerald-600 font-bold flex items-center gap-1">PAGE III // ACTIVE</span>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* ========================================================================= */}
-            {/* SHEET 3: AWS CLOUD / CISCO CYBERSECURITY */}
-            {/* ========================================================================= */}
-            <motion.div
-              style={{
-                transform: useTransform(rotateY3, (r) => `rotateY(${r}deg)`),
-                transformOrigin: "left center",
-                zIndex: zIndex3,
-              }}
-              className="absolute inset-0 w-full h-full transform-style-3d transition-shadow duration-300"
-            >
-              {/* [FRONT FACE]: Certificate 3 - AWS Cloud Practitioner (appears on right before flip) */}
-              <div 
-                style={{ backfaceVisibility: "hidden" }}
-                className="absolute inset-0 w-full h-full bg-[#fdfcfe] border border-sand rounded-r-2xl p-6 sm:p-8 flex flex-col justify-between shadow-md z-20"
-              >
-                {/* Spine shade */}
-                <div className="absolute top-0 left-0 w-6 h-full bg-gradient-to-r from-black/10 to-transparent pointer-events-none rounded-r-sm" />
-
-                {/* Header */}
-                <div className="flex justify-between items-start">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-orange-50 rounded-xl flex items-center justify-center border border-orange-100 text-orange-600 font-bold text-xs shadow-xs">
-                      AWS
-                    </div>
-                    <div>
-                      <span className="text-[9px] font-mono uppercase tracking-widest text-neutral-400 block">// AMAZON WEB SERVICES</span>
-                      <h4 className="text-base font-bold font-mono text-pine uppercase tracking-wider">Cloud Practitioner</h4>
-                    </div>
-                  </div>
-                  <span className="text-xs font-mono font-semibold text-pine bg-pine/5 px-2.5 py-1 rounded-full border border-sand shadow-xs">2025</span>
-                </div>
-
-                {/* Certificate Mock Box */}
-                <div className="p-4 rounded-2xl bg-neutral-50/80 border border-sand relative overflow-hidden flex-1 my-4 flex flex-col justify-between">
-                  <div className="absolute right-3 bottom-3 opacity-10 pointer-events-none">
-                    <Award className="w-24 h-24 text-pine" />
-                  </div>
-
-                  <div className="space-y-2 text-left">
-                    <p className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 font-semibold">// CREDENTIAL DETAILS</p>
-                    <p className="text-[11px] font-mono text-neutral-600 leading-normal">
-                      Validates total understanding of **AWS cloud infrastructure, global network zones, core database operations (EC2, S3, RDS), secure IAM role compliance, and billing configurations**.
-                    </p>
-                  </div>
-
-                  <div className="flex flex-wrap gap-1.5 pt-3 border-t border-neutral-100">
-                    {["IAM Security", "EC2 Compute", "S3 Storage", "Cloud Architecture", "Pricing"].map(tag => (
-                      <span key={tag} className="text-[8px] font-mono bg-white border border-sand px-2 py-0.5 rounded text-neutral-500">{tag}</span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Footer */}
-                <div className="flex justify-between items-center font-mono text-[9px] text-[#9d9282] uppercase tracking-widest border-t border-neutral-100 pt-3">
-                  <span>AWS verification</span>
-                  <span className="text-emerald-600 font-bold flex items-center gap-1">PAGE IV // ACTIVE</span>
-                </div>
-              </div>
-
-              {/* [BACK FACE]: Certificate 4 - Cisco Cybersecurity (appears on left when flipped) */}
-              <div 
-                style={{
-                  backfaceVisibility: "hidden",
-                  transform: "rotateY(180deg)",
-                }}
-                className="absolute inset-0 w-full h-full bg-[#fcfbfa] border border-sand rounded-l-2xl p-6 sm:p-8 flex flex-col justify-between shadow-inner z-10"
-              >
-                {/* Spine shade */}
-                <div className="absolute top-0 right-0 w-6 h-full bg-gradient-to-l from-black/10 to-transparent pointer-events-none rounded-l-sm" />
-
-                {/* Header */}
-                <div className="flex justify-between items-start">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center border border-indigo-100 text-indigo-600 font-bold text-xs shadow-xs animate-pulse">
-                      CISCO
-                    </div>
-                    <div>
-                      <span className="text-[9px] font-mono uppercase tracking-widest text-neutral-400 block">// NETWORK DEFENSE</span>
-                      <h4 className="text-base font-bold font-mono text-pine uppercase tracking-wider">Intro to Cybersecurity</h4>
-                    </div>
-                  </div>
-                  <span className="text-xs font-mono font-semibold text-pine bg-pine/5 px-2.5 py-1 rounded-full border border-sand shadow-xs">2024</span>
-                </div>
-
-                {/* Certificate Mock Box */}
-                <div className="p-4 rounded-2xl bg-neutral-50/80 border border-sand relative overflow-hidden flex-1 my-4 flex flex-col justify-between">
-                  <div className="absolute right-3 bottom-3 opacity-10 pointer-events-none">
-                    <Shield className="w-24 h-24 text-pine" />
-                  </div>
-
-                  <div className="space-y-2 text-left">
-                    <p className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 font-semibold">// CREDENTIAL DETAILS</p>
-                    <p className="text-[11px] font-mono text-neutral-600 leading-normal">
-                      Validates foundational knowledge of **network threats monitoring, data privacy protection strategies, cryptography protocols, security compliance frameworks, and digital forensics**.
-                    </p>
-                  </div>
-
-                  <div className="flex flex-wrap gap-1.5 pt-3 border-t border-neutral-100">
-                    {["Net Security", "Data Privacy", "Cryptography", "Threat Vectors", "Forensics"].map(tag => (
-                      <span key={tag} className="text-[8px] font-mono bg-white border border-sand px-2 py-0.5 rounded text-neutral-500">{tag}</span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Footer */}
-                <div className="flex justify-between items-center font-mono text-[9px] text-[#9d9282] uppercase tracking-widest border-t border-neutral-100 pt-3">
-                  <span>Cisco Academy Registry</span>
-                  <span className="text-emerald-600 font-bold flex items-center gap-1">PAGE V // ACTIVE</span>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* ========================================================================= */}
-            {/* SHEET 4: BACK COVER (STATIC RIGHT-SIDE BASE) */}
-            {/* ========================================================================= */}
-            <div className="absolute inset-0 w-full h-full bg-[#04251b] border-2 border-amber-500/20 rounded-r-2xl p-8 flex flex-col justify-between shadow-md z-0 select-none pointer-events-none">
-              {/* Spine lining */}
-              <div className="absolute top-0 left-0 w-3 h-full bg-black/40 border-r border-amber-500/10 rounded-r-sm" />
-              
-              <div className="flex justify-between items-start pl-4">
-                <Bookmark className="w-8 h-8 text-amber-500/60" />
-                <span className="text-[9px] font-mono text-[#dfefe4]/30 tracking-widest uppercase">REG. CODE // 1612</span>
-              </div>
-
-              <div className="space-y-4 pl-4 text-left">
-                <span className="text-[10px] font-mono uppercase tracking-widest text-[#10be7e] font-bold block">
-                  // VERIFICATION COMPLETION
-                </span>
-                <h3 className="text-3xl sm:text-5xl font-oswald text-cream font-extrabold uppercase tracking-wide leading-none">
-                  CREDENTIALS<br />REGISTERED.
-                </h3>
-                <div className="w-16 h-[2px] bg-amber-500/40" />
-                <p className="text-[10px] font-mono text-[#dfefe4]/60 uppercase tracking-widest leading-relaxed">
-                  SECURE COMPLIANCE ESTABLISHED.<br />
-                  ALL VERIFIED SECTIONS ENCRYPTED.
-                </p>
-              </div>
-
-              <div className="flex justify-between items-center pl-4 font-mono text-[9px] text-[#dfefe4]/40 uppercase tracking-widest border-t border-[#dfefe4]/10 pt-4">
-                <span>SYSTEM COMPLETED // EST. 2026</span>
-                <span className="text-emerald-400 font-bold flex items-center gap-1">
-                  SECURED <CheckCircle className="w-3.5 h-3.5" />
-                </span>
-              </div>
-            </div>
 
           </div>
+        </div>
+
+        {/* Tactile Book-Flipping Controls Overlay */}
+        <div className="flex items-center gap-6 mt-8 z-20">
+          <button 
+            disabled={currentPage === 0}
+            onClick={() => handlePageClick("prev")}
+            className="px-5 py-2.5 bg-white hover:bg-neutral-100 disabled:opacity-40 border border-[#dfd9cb] rounded-full text-xs font-mono uppercase font-bold text-pine tracking-wider transition-all shadow-xs cursor-pointer disabled:cursor-not-allowed"
+          >
+            ← Flip Back
+          </button>
+          
+          <span className="font-mono text-xs text-neutral-500 uppercase tracking-widest self-center">
+            SPREAD {currentPage} of {maxPages}
+          </span>
+          
+          <button 
+            disabled={currentPage === maxPages}
+            onClick={() => handlePageClick("next")}
+            className="px-5 py-2.5 bg-pine text-cream hover:bg-pine-light disabled:opacity-40 rounded-full text-xs font-mono uppercase font-bold tracking-wider transition-all shadow-xs cursor-pointer disabled:cursor-not-allowed"
+          >
+            Flip Forward →
+          </button>
         </div>
 
       </div>
