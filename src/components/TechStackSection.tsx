@@ -4,9 +4,13 @@ import { Sparkles, Info, RefreshCw } from "lucide-react";
 interface SkillBall {
   x: number;
   y: number;
+  z: number; // 3D Depth coordinate (-100 to 100)
   vx: number;
   vy: number;
+  vz: number; // 3D Depth velocity
   radius: number;
+  angle: number; // Rotational angle (in radians)
+  angleVelocity: number; // Angular velocity (spin rate)
   name: string;
   logoUrl: string;
   imageElement: HTMLImageElement;
@@ -56,14 +60,17 @@ export default function TechStackSection() {
     let mouse = { x: -1000, y: -1000, active: false };
     let clickRipples: { x: number; y: number; radius: number; maxRadius: number; opacity: number }[] = [];
 
-    // Bouncy 2D Physics settings (aquarium float tuning)
-    const RESTITUTION = 0.88; // Extra high bounciness!
-    const FRICTION = 0.992;   // Extremely low drag so they glide forever
-    const HOVER_DIST = 120;   // Repelling force field reach
-    const HOVER_PUSH = 0.55;  // Force field acceleration scale
-    const CLICK_KICK = 24.0;  // Local click shockwave impulse force!
+    // Volumetric 3D Physics parameters
+    const RESTITUTION = 0.85;      // Bounciness index
+    const FRICTION = 0.990;         // Glide/drag dampener
+    const SPIN_FRICTION = 0.975;    // Spin slowing rate
+    const HOVER_DIST = 130;         // Repelling field reach
+    const HOVER_PUSH = 0.50;        // Repelling force factor
+    const CLICK_KICK = 22.0;        // Tap shockwave impulse push
+    const CLICK_SPIN = 0.35;        // Rotational impulse rate (radians/frame)
+    const DEPTH_LIMIT = 80;         // Z-axis aquarium boundaries
 
-    // Pre-cache all brand vector logo images
+    // Pre-cache logo visual elements
     const preloadedSkills = SKILLS.map((skill) => {
       const img = new Image();
       img.src = skill.logo;
@@ -81,11 +88,11 @@ export default function TechStackSection() {
       canvas.width = width;
       canvas.height = height;
 
-      // Sizing circles beautifully based on responsive widths
-      const baseRadius = width < 640 ? 38 : 46;
+      // Base radius scaled to screen width
+      const baseRadius = width < 640 ? 36 : 44;
       balls = [];
 
-      // Grid based spacing layout to prevent overlap on boot
+      // Clean grid spacing to prevent overlaps on startup
       const margin = baseRadius * 2.2;
       const cols = Math.max(2, Math.floor((width - margin) / (baseRadius * 2.4)));
       
@@ -95,13 +102,18 @@ export default function TechStackSection() {
 
         const gridX = margin + col * (baseRadius * 2.4) + (Math.random() - 0.5) * 20;
         const gridY = margin + row * (baseRadius * 2.4) + (Math.random() - 0.5) * 20;
+        const initialZ = (Math.random() - 0.5) * (DEPTH_LIMIT * 1.5); // Random 3D starting depth
 
         balls.push({
           x: Math.max(baseRadius, Math.min(width - baseRadius, gridX)),
           y: Math.max(baseRadius, Math.min(height - baseRadius, gridY)),
-          vx: (Math.random() - 0.5) * 8.0, // High energetic starts!
-          vy: (Math.random() - 0.5) * 8.0,
+          z: initialZ,
+          vx: (Math.random() - 0.5) * 7.0,
+          vy: (Math.random() - 0.5) * 7.0,
+          vz: (Math.random() - 0.5) * 2.5,
           radius: baseRadius,
+          angle: Math.random() * Math.PI * 2, // Random initial rotation
+          angleVelocity: (Math.random() - 0.5) * 0.02, // Gentle start spin
           name: skill.name,
           logoUrl: skill.logo,
           imageElement: skill.imageElement,
@@ -110,17 +122,18 @@ export default function TechStackSection() {
       });
     };
 
-    // Width tracking to prevent scroll reset bugs from ResizeObserver
     let lastWidth = container.clientWidth;
     initSimulation();
 
-    // Scramble velocity kick
+    // Trigger full physical scrambling + spins
     triggerScramble.current = () => {
       balls.forEach((ball) => {
         const angle = Math.random() * Math.PI * 2;
-        const speed = Math.random() * 12 + 10;
+        const speed = Math.random() * 10 + 8;
         ball.vx = Math.cos(angle) * speed;
         ball.vy = Math.sin(angle) * speed;
+        ball.vz = (Math.random() - 0.5) * 6;
+        ball.angleVelocity = (Math.random() - 0.5) * CLICK_SPIN * 2.0; // Scramble spins!
       });
       clickRipples.push({
         x: canvas.width / 2,
@@ -131,47 +144,75 @@ export default function TechStackSection() {
       });
     };
 
-    // Elastic Circle to Circle momentum resolution
+    // Elastic 3D-aware momentum collision solver
     const resolveCollision = (b1: SkillBall, b2: SkillBall) => {
+      // Calculate 3D distances
       const dx = b2.x - b1.x;
       const dy = b2.y - b1.y;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      const minDist = b1.radius + b2.radius;
+      
+      // Z-depth distance factor (scaled slightly so they cross over in front of/behind each other easily, 
+      // but still collide if they occupy similar depths!)
+      const dz = (b2.z - b1.z) * 0.45; 
+      
+      const dist3D = Math.sqrt(dx * dx + dy * dy + dz * dz);
+      
+      // Scale radius by Z depth (parallax sizing)
+      const scale1 = 1.0 + (b1.z / 350);
+      const scale2 = 1.0 + (b2.z / 350);
+      const r1 = b1.radius * scale1;
+      const r2 = b2.radius * scale2;
+      const minDist = r1 + r2;
 
-      if (dist < minDist) {
-        const overlap = minDist - dist;
-        const nx = dx / (dist || 1);
-        const ny = dy / (dist || 1);
+      // If they collide in 3D space:
+      if (dist3D < minDist) {
+        const overlap = minDist - dist3D;
+        
+        // Unit normal vector components in 3D
+        const nx = dx / (dist3D || 1);
+        const ny = dy / (dist3D || 1);
+        const nz = dz / (dist3D || 1);
 
-        // Displace overlaps immediately
-        b1.x -= nx * overlap * 0.51;
-        b1.y -= ny * overlap * 0.51;
-        b2.x += nx * overlap * 0.51;
-        b2.y += ny * overlap * 0.51;
+        // Separate overlaps in 3D space to prevent sticking
+        const pushCoeff = 0.51;
+        b1.x -= nx * overlap * pushCoeff;
+        b1.y -= ny * overlap * pushCoeff;
+        b1.z -= nz * overlap * pushCoeff * 2; // Extra Z kick to separate depths
+        b2.x += nx * overlap * pushCoeff;
+        b2.y += ny * overlap * pushCoeff;
+        b2.z += nz * overlap * pushCoeff * 2;
 
-        // Relative velocity along collision vector
+        // Relative velocity vector along collision axis
         const rvx = b2.vx - b1.vx;
         const rvy = b2.vy - b1.vy;
-        const velAlongNormal = rvx * nx + rvy * ny;
+        const rvz = b2.vz - b1.vz;
+        const velAlongNormal = rvx * nx + rvy * ny + rvz * nz;
 
+        // Bouncing forces
         if (velAlongNormal < 0) {
           const impulseScalar = -(1.0 + RESTITUTION) * velAlongNormal / 2;
           
           b1.vx -= impulseScalar * nx;
           b1.vy -= impulseScalar * ny;
+          b1.vz -= impulseScalar * nz;
           b2.vx += impulseScalar * nx;
           b2.vy += impulseScalar * ny;
+          b2.vz += impulseScalar * nz;
+
+          // Introduce friction-based rotation (rolling when they bump!)
+          const spinKick = (b1.vx * b2.vy - b1.vy * b2.vx) * 0.005;
+          b1.angleVelocity += spinKick;
+          b2.angleVelocity -= spinKick;
         }
       }
     };
 
-    // Animation Tick
+    // Physics Animation Loop
     let time = 0;
     const tick = () => {
       time++;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // 1. Process local ripples
+      // 1. Render background ripples
       clickRipples = clickRipples.filter((ripple) => {
         ripple.radius += 5.5;
         ripple.opacity -= 0.025;
@@ -185,13 +226,14 @@ export default function TechStackSection() {
         return ripple.opacity > 0 && ripple.radius < ripple.maxRadius;
       });
 
-      // 2. Physics & Bounds updates
+      // 2. Volumetric 3D updates
       balls.forEach((ball) => {
-        // High float brownian aquarium wave sways (NO heavy gravity to prevent sinking!)
-        ball.vx += Math.sin(time * 0.02 + ball.y * 0.01) * 0.06;
-        ball.vy += Math.cos(time * 0.02 + ball.x * 0.01) * 0.06;
+        // Soft volumetric Brownian floating sway (keeps them floating and moving back/forth along Z axis)
+        ball.vx += Math.sin(time * 0.018 + ball.y * 0.01) * 0.05;
+        ball.vy += Math.cos(time * 0.018 + ball.x * 0.01) * 0.05;
+        ball.vz += Math.sin(time * 0.012 + ball.x * 0.005) * 0.04;
 
-        // Mouse cursor repel fields
+        // Soft cursor repelling field (applies pushing vectors)
         if (mouse.active) {
           const mdx = ball.x - mouse.x;
           const mdy = ball.y - mouse.y;
@@ -201,33 +243,55 @@ export default function TechStackSection() {
             const pushForce = (HOVER_DIST - mdist) * HOVER_PUSH * 0.035;
             ball.vx += (mdx / mdist) * pushForce;
             ball.vy += (mdy / mdist) * pushForce;
+            // Hover adds subtle rotational rolling
+            ball.angleVelocity += (mdx * ball.vy - mdy * ball.vx) * 0.0001;
           }
         }
 
-        // Apply friction drag
+        // Apply friction drag & angular spin damping
         ball.vx *= FRICTION;
         ball.vy *= FRICTION;
+        ball.vz *= FRICTION;
+        ball.angleVelocity *= SPIN_FRICTION;
 
-        // Integrate positions
+        // Integrate positions & rotation angle
         ball.x += ball.vx;
         ball.y += ball.vy;
+        ball.z += ball.vz;
+        ball.angle += ball.angleVelocity;
 
-        // Wall boundary rebounds
+        // Boundaries checks in X, Y
+        const scale = 1.0 + (ball.z / 350); // parallax sizing factor
+        const effRadius = ball.radius * scale;
+
         const bounceDampen = RESTITUTION;
-        if (ball.x - ball.radius < 0) {
-          ball.x = ball.radius;
+        if (ball.x - effRadius < 0) {
+          ball.x = effRadius;
           ball.vx = -ball.vx * bounceDampen;
-        } else if (ball.x + ball.radius > canvas.width) {
-          ball.x = canvas.width - ball.radius;
+          ball.angleVelocity += ball.vy * 0.01; // roll along the wall!
+        } else if (ball.x + effRadius > canvas.width) {
+          ball.x = canvas.width - effRadius;
           ball.vx = -ball.vx * bounceDampen;
+          ball.angleVelocity -= ball.vy * 0.01;
         }
 
-        if (ball.y - ball.radius < 0) {
-          ball.y = ball.radius;
+        if (ball.y - effRadius < 0) {
+          ball.y = effRadius;
           ball.vy = -ball.vy * bounceDampen;
-        } else if (ball.y + ball.radius > canvas.height) {
-          ball.y = canvas.height - ball.radius;
+          ball.angleVelocity -= ball.vx * 0.01;
+        } else if (ball.y + effRadius > canvas.height) {
+          ball.y = canvas.height - effRadius;
           ball.vy = -ball.vy * bounceDampen;
+          ball.angleVelocity += ball.vx * 0.01;
+        }
+
+        // Z-axis boundaries aquarium depth rebounds (back & front glass)
+        if (ball.z < -DEPTH_LIMIT) {
+          ball.z = -DEPTH_LIMIT;
+          ball.vz = -ball.vz * bounceDampen;
+        } else if (ball.z > DEPTH_LIMIT) {
+          ball.z = DEPTH_LIMIT;
+          ball.vz = -ball.vz * bounceDampen;
         }
       });
 
@@ -238,73 +302,88 @@ export default function TechStackSection() {
         }
       }
 
-      // 4. Render Balls with premium 3D Glossy Sphere styling
-      balls.forEach((ball) => {
+      // 4. SORT BY Z-COORDINATE BEFORE RENDERING (Perfect 3D Parallax Layering!)
+      // Balls with lesser Z (in the back) are drawn first, and balls with greater Z (in the front) are drawn on top.
+      const renderedBalls = [...balls].sort((a, b) => a.z - b.z);
+
+      // 5. Draw 3D glossy spheres with rotating logos
+      renderedBalls.forEach((ball) => {
+        const scale = 1.0 + (ball.z / 350); // sizing ranges from 0.7 to 1.3
+        const r = ball.radius * scale;
+
         ctx.save();
 
-        // 3D Sphere drop shadow
-        ctx.shadowColor = "rgba(4, 37, 27, 0.16)";
-        ctx.shadowBlur = 14;
-        ctx.shadowOffsetX = 2;
-        ctx.shadowOffsetY = 8;
+        // 3D Shadow scale (deeper foreground balls have softer, larger shadows)
+        ctx.shadowColor = "rgba(4, 37, 27, 0.15)";
+        ctx.shadowBlur = 10 * scale;
+        ctx.shadowOffsetX = 1 * scale;
+        ctx.shadowOffsetY = 6 * scale;
 
-        // Radial gradient for 3D sphere depth
+        // Volumetric Radial Gradient for 3D sphere depth
         const sphereGrad = ctx.createRadialGradient(
-          ball.x - ball.radius * 0.3,
-          ball.y - ball.radius * 0.3,
-          ball.radius * 0.05,
+          ball.x - r * 0.3,
+          ball.y - r * 0.3,
+          r * 0.05,
           ball.x,
           ball.y,
-          ball.radius
+          r
         );
-        sphereGrad.addColorStop(0, "#ffffff");      // Highlight reflection spot
-        sphereGrad.addColorStop(0.35, "#f7f6f3");    // Sphere body base
-        sphereGrad.addColorStop(0.85, "#dcd8cf");    // Edge shading contour
+        sphereGrad.addColorStop(0, "#ffffff");      // Specular highlight spot
+        sphereGrad.addColorStop(0.35, "#f7f6f3");    // Soft body base
+        sphereGrad.addColorStop(0.85, "#dcd8cf");    // Volumetric shadow contour
         sphereGrad.addColorStop(1, "#b3ad9e");       // Deep ambient bottom rim
 
         ctx.fillStyle = sphereGrad;
         ctx.beginPath();
-        ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+        ctx.arc(ball.x, ball.y, r, 0, Math.PI * 2);
         ctx.fill();
         ctx.restore();
 
-        // Subtle outer border ring
-        ctx.strokeStyle = "rgba(7, 58, 43, 0.12)";
+        // Soft outer outline ring
+        ctx.strokeStyle = "rgba(7, 58, 43, 0.10)";
         ctx.lineWidth = 1;
         ctx.beginPath();
-        ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+        ctx.arc(ball.x, ball.y, r, 0, Math.PI * 2);
         ctx.stroke();
 
-        // Render centered logo (occupying ~50% width inside the sphere)
-        const logoSize = ball.radius * 1.05;
+        // Render centered + ROTATING brand logo
+        const logoSize = r * 1.05;
         if (ball.imageElement.complete && ball.imageElement.naturalWidth > 0) {
           ctx.save();
-          // Clip drawing area to keep brand icons beautifully centered
+          // Clip drawing area to keep the logo cleanly circular
           ctx.beginPath();
-          ctx.arc(ball.x, ball.y, ball.radius * 0.9, 0, Math.PI * 2);
+          ctx.arc(ball.x, ball.y, r * 0.9, 0, Math.PI * 2);
           ctx.clip();
+          
+          // Apply rotation transformation for rolling logos
+          ctx.translate(ball.x, ball.y);
+          ctx.rotate(ball.angle);
           
           ctx.drawImage(
             ball.imageElement,
-            ball.x - logoSize / 2,
-            ball.y - logoSize / 2,
+            -logoSize / 2,
+            -logoSize / 2,
             logoSize,
             logoSize
           );
           ctx.restore();
         } else {
+          ctx.save();
+          ctx.translate(ball.x, ball.y);
+          ctx.rotate(ball.angle);
           ctx.fillStyle = "#073a2b";
-          ctx.font = "bold 10px JetBrains Mono";
+          ctx.font = `bold ${Math.round(10 * scale)}px JetBrains Mono`;
           ctx.textAlign = "center";
           ctx.textBaseline = "middle";
-          ctx.fillText(ball.name.slice(0, 5), ball.x, ball.y);
+          ctx.fillText(ball.name.slice(0, 5), 0, 0);
+          ctx.restore();
         }
 
-        // Specular white gloss highlights
+        // Glass reflection overlay
         ctx.save();
         const shineGrad = ctx.createLinearGradient(
-          ball.x - ball.radius,
-          ball.y - ball.radius,
+          ball.x - r,
+          ball.y - r,
           ball.x,
           ball.y
         );
@@ -314,13 +393,13 @@ export default function TechStackSection() {
 
         ctx.fillStyle = shineGrad;
         ctx.beginPath();
-        ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+        ctx.arc(ball.x, ball.y, r, 0, Math.PI * 2);
         ctx.fill();
 
-        // Tiny specular dot for maximum realistic 3D shine
+        // Volumetric specular dot
         ctx.fillStyle = "rgba(255, 255, 255, 0.75)";
         ctx.beginPath();
-        ctx.arc(ball.x - ball.radius * 0.45, ball.y - ball.radius * 0.45, ball.radius * 0.12, 0, Math.PI * 2);
+        ctx.arc(ball.x - r * 0.45, ball.y - r * 0.45, r * 0.12, 0, Math.PI * 2);
         ctx.fill();
         ctx.restore();
       });
@@ -330,7 +409,7 @@ export default function TechStackSection() {
 
     tick();
 
-    // Pointer impulse kicks
+    // Handle clicks/touches on 3D layers
     const handleActionInput = (clientX: number, clientY: number) => {
       const rect = canvas.getBoundingClientRect();
       const inputX = clientX - rect.left;
@@ -338,23 +417,37 @@ export default function TechStackSection() {
 
       let clickedAnyBall = false;
 
-      balls.forEach((ball) => {
+      // Sort by Z descending so we check foreground balls first (proper 3D raycasting!)
+      const clickOrderBalls = [...balls].sort((a, b) => b.z - a.z);
+
+      for (let i = 0; i < clickOrderBalls.length; i++) {
+        const ball = clickOrderBalls[i];
+        const scale = 1.0 + (ball.z / 350);
+        const r = ball.radius * scale;
+
         const dx = ball.x - inputX;
         const dy = ball.y - inputY;
         const dist = Math.sqrt(dx * dx + dy * dy);
 
-        if (dist < ball.radius * 2.2) {
+        // Click target hit margin scaled by depth size
+        if (dist < r * 1.8) {
           clickedAnyBall = true;
           setSelectedSkill(ball.name);
 
-          // Impulse kick away from cursor
+          // Impulse vector away from cursor click
           const angle = Math.atan2(dy, dx);
-          const force = (1.5 - dist / (ball.radius * 2.2)) * CLICK_KICK;
+          const force = (1.5 - dist / (r * 1.8)) * CLICK_KICK;
           
+          // Apply velocity impulses
           ball.vx += Math.cos(angle) * force;
           ball.vy += Math.sin(angle) * force;
+          ball.vz += (Math.random() - 0.5) * 5; // Impulse pushes depth too!
+          
+          // Apply rotational spin kick!
+          ball.angleVelocity += (Math.random() - 0.5) * CLICK_SPIN;
+          break; // Click only the topmost foreground ball
         }
-      });
+      }
 
       clickRipples.push({
         x: inputX,
@@ -391,7 +484,7 @@ export default function TechStackSection() {
     canvas.addEventListener("mouseleave", onMouseLeave);
     canvas.addEventListener("touchstart", onTouchStart, { passive: true });
 
-    // ResizeObserver debouncing: ONLY re-init if the container clientWidth actually changes
+    // ResizeObserver debouncer synchronization
     const resizeObserver = new ResizeObserver(() => {
       const width = container.clientWidth;
       if (width !== lastWidth) {
@@ -430,7 +523,7 @@ export default function TechStackSection() {
           </div>
           
           <div className="max-w-xs font-mono text-xs text-neutral-500 leading-relaxed xl:mb-2 border-l border-sand pl-4">
-            CLICK OR TAP ON THE FLOATING 3D SKILL SPHERES TO INITIATE VELOCITY KICKS. WATCH THEM COLLIDE WITH PHYSICS-BASED MOMENTUM.
+            FLOATING 3D SPHERES DRIFT VOLUMETRICALLY IN AN AQUARIUM DEPTH LAYER. CLICK TO KICK THEM WITH VELOCITY AND WATCH THE LOGOS SPIN!
           </div>
         </div>
 
@@ -451,7 +544,7 @@ export default function TechStackSection() {
           {/* Floaters UI helper labels overlay */}
           <div className="absolute bottom-4 left-6 z-20 pointer-events-none font-mono text-[9px] text-[#9d9282] uppercase tracking-widest hidden sm:flex items-center gap-1.5 bg-[#efebe4]/80 backdrop-blur-xs px-3 py-1.5 rounded-full border border-sand">
             <Info className="w-3.5 h-3.5 text-pine" />
-            <span>Repelling Field Active on Cursor hover</span>
+            <span>Volumetric 3D Layering &amp; Spin Active</span>
           </div>
 
           <div className="absolute bottom-4 right-6 z-20 font-mono text-[9px] text-pine uppercase tracking-widest flex items-center gap-1.5">
