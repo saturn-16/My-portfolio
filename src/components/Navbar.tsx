@@ -39,7 +39,7 @@ export default function Navbar({ onContactClick }: NavbarProps) {
   };
 
   return (
-    <header className="w-full py-4 px-6 md:px-12 flex flex-col md:flex-row items-center justify-between gap-4 sticky top-0 z-40 bg-cream/90 backdrop-blur-md border-b border-sand">
+    <header className="w-full py-4 px-6 md:px-12 flex flex-col md:flex-row items-center justify-between gap-4 sticky top-0 z-40 bg-cream/90 backdrop-blur-md border-b border-sand rounded-t-[24px]">
       {/* Signature Logo */}
       <button 
         onClick={() => {

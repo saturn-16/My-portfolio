@@ -55,7 +55,7 @@ export default function App() {
         </div>
 
         {/* Major Inner Container Card */}
-        <div className="bg-[#efebe4] rounded-3xl overflow-hidden shadow-2xl border border-sand flex flex-col">
+        <div className="bg-[#efebe4] rounded-3xl shadow-2xl border border-sand flex flex-col">
           
           {/* Header Navigation Section */}
           <Navbar onContactClick={() => setContactOpen(true)} />
@@ -179,7 +179,7 @@ export default function App() {
           </section>
 
           {/* Massive Footer with copy feedback and dynamic Eindhoven clock */}
-          <footer className="bg-sand p-8 md:p-14 text-pine space-y-12">
+          <footer className="bg-sand p-8 md:p-14 text-pine space-y-12 rounded-b-[24px]">
             
             {/* Top row: Massive Email & Copy Feature */}
             <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 border-b border-[#dfd9cb] pb-10">
