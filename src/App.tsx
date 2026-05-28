@@ -5,6 +5,7 @@ import WorksSection from "./components/WorksSection";
 import AboutSection from "./components/AboutSection";
 import OffDutySection from "./components/OffDutySection";
 import SmoothScroll from "./components/SmoothScroll";
+import TechStackSection from "./components/TechStackSection";
 
 import ContactDrawer from "./components/ContactDrawer";
 import { ArrowUpRight, Copy, Check, Clock, Code } from "lucide-react";
@@ -150,6 +151,9 @@ export default function App() {
 
           {/* About Manifesto Bento Grid */}
           <AboutSection />
+
+          {/* Tech Stack Physics Simulation */}
+          <TechStackSection />
 
           {/* Off Duty Hobby Console */}
           <OffDutySection />
