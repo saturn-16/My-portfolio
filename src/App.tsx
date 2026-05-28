@@ -6,6 +6,7 @@ import AboutSection from "./components/AboutSection";
 import OffDutySection from "./components/OffDutySection";
 import SmoothScroll from "./components/SmoothScroll";
 import TechStackSection from "./components/TechStackSection";
+import CertificateBookSection from "./components/CertificateBookSection";
 
 import ContactDrawer from "./components/ContactDrawer";
 import { ArrowUpRight, Copy, Check, Clock, Code } from "lucide-react";
@@ -154,6 +155,9 @@ export default function App() {
 
           {/* Tech Stack Physics Simulation */}
           <TechStackSection />
+
+          {/* 3D Book-Flip Certificate Section */}
+          <CertificateBookSection />
 
           {/* Off Duty Hobby Console */}
           <OffDutySection />
