@@ -114,9 +114,9 @@ export default function CertificateBookSection() {
             {/* 3D STACKED PAGES DEPTH EFFECT (Creates physical thickness under book) */}
             {/* ========================================================================= */}
             {/* Left side paper sheets stack */}
-            <div className="absolute top-1 right-1/2 w-[49.5%] h-[98%] bg-[#faf8f5] border border-sand rounded-l-2xl shadow-sm -translate-x-[2px] translate-z-[-2px] pointer-events-none z-0" />
-            <div className="absolute top-2 right-1/2 w-[49%] h-[96%] bg-[#f7f4ee] border border-sand rounded-l-2xl shadow-xs -translate-x-[4px] translate-z-[-4px] pointer-events-none z-0" />
-            <div className="absolute top-3 right-1/2 w-[48.5%] h-[94%] bg-[#f3f0e8] border border-sand rounded-l-2xl shadow-xs -translate-x-[6px] translate-z-[-6px] pointer-events-none z-0" />
+            <div className={`absolute top-1 right-1/2 w-[49.5%] h-[98%] bg-[#faf8f5] border border-sand rounded-l-2xl shadow-sm -translate-x-[2px] translate-z-[-2px] pointer-events-none z-0 transition-opacity duration-350 ${currentPage === 0 ? "opacity-0" : "opacity-100"}`} />
+            <div className={`absolute top-2 right-1/2 w-[49%] h-[96%] bg-[#f7f4ee] border border-sand rounded-l-2xl shadow-xs -translate-x-[4px] translate-z-[-4px] pointer-events-none z-0 transition-opacity duration-350 ${currentPage === 0 ? "opacity-0" : "opacity-100"}`} />
+            <div className={`absolute top-3 right-1/2 w-[48.5%] h-[94%] bg-[#f3f0e8] border border-sand rounded-l-2xl shadow-xs -translate-x-[6px] translate-z-[-6px] pointer-events-none z-0 transition-opacity duration-350 ${currentPage === 0 ? "opacity-0" : "opacity-100"}`} />
             
             {/* Right side paper sheets stack */}
             <div className="absolute top-1 left-1/2 w-[49.5%] h-[98%] bg-[#faf8f5] border border-sand rounded-r-2xl shadow-sm translate-x-[2px] translate-z-[-2px] pointer-events-none z-0" />
@@ -124,10 +124,14 @@ export default function CertificateBookSection() {
             <div className="absolute top-3 left-1/2 w-[48.5%] h-[94%] bg-[#f3f0e8] border border-sand rounded-r-2xl shadow-xs translate-x-[6px] translate-z-[-6px] pointer-events-none z-0" />
 
             {/* ========================================================================= */}
-            {/* STATIC BACK COVER (Always rests at bottom-right) */}
+            {/* STATIC BACK COVER (Always rests at bottom-right when closed, full-spread when open) */}
             {/* ========================================================================= */}
             <div 
-              className="absolute inset-0 w-full h-full bg-[#04251b] border-2 border-amber-500/20 rounded-r-2xl p-6 sm:p-8 flex flex-col justify-between shadow-2xl z-0"
+              className={`absolute top-0 h-full bg-[#04251b] border-2 border-amber-500/20 rounded-r-2xl p-6 sm:p-8 flex flex-col justify-between shadow-2xl z-0 transition-all duration-350 ${
+                currentPage === 0 
+                  ? "left-1/2 w-1/2 border-l border-amber-500/10" 
+                  : "left-0 w-full"
+              }`}
               style={{ transform: "translateZ(-8px)" }}
             >
               {/* Spine lining */}
