@@ -11,7 +11,7 @@ export default function Navbar({ onContactClick }: NavbarProps) {
 
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ["hero", "works", "about", "off-duty"];
+      const sections = ["hero", "works", "about", "tech-stack", "certificates", "off-duty"];
       const scrollPosition = window.scrollY + 200;
 
       for (const section of sections) {
@@ -53,10 +53,12 @@ export default function Navbar({ onContactClick }: NavbarProps) {
       </button>
 
       {/* Navigation Capsule Menu */}
-      <nav className="bg-white/95 border border-sand shadow-xs rounded-full px-2 py-1.5 flex items-center md:gap-1">
+      <nav className="bg-white/95 border border-sand shadow-xs rounded-full px-2 py-1.5 flex flex-wrap items-center justify-center gap-0.5 md:gap-1">
         {[
           { id: "works", label: "Works" },
           { id: "about", label: "About" },
+          { id: "tech-stack", label: "Tech Stack" },
+          { id: "certificates", label: "Certificates" },
           { id: "off-duty", label: "Off Duty" },
         ].map((item) => (
           <button
