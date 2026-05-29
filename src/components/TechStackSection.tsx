@@ -521,10 +521,6 @@ export default function TechStackSection() {
               &amp; Skills Radar
             </h2>
           </div>
-          
-          <div className="max-w-xs font-mono text-xs text-neutral-500 leading-relaxed xl:mb-2 border-l border-sand pl-4">
-            FLOATING 3D SPHERES DRIFT VOLUMETRICALLY IN AN AQUARIUM DEPTH LAYER. CLICK TO KICK THEM WITH VELOCITY AND WATCH THE LOGOS SPIN!
-          </div>
         </div>
 
         {/* Physics Playground Arena Container (No white border, transparent background) */}
@@ -541,11 +537,7 @@ export default function TechStackSection() {
             className="absolute inset-0 cursor-pointer block touch-none z-10"
           />
 
-          {/* Floaters UI helper labels overlay */}
-          <div className="absolute bottom-4 left-6 z-20 pointer-events-none font-mono text-[9px] text-[#9d9282] uppercase tracking-widest hidden sm:flex items-center gap-1.5 bg-[#efebe4]/80 backdrop-blur-xs px-3 py-1.5 rounded-full border border-sand">
-            <Info className="w-3.5 h-3.5 text-pine" />
-            <span>Volumetric 3D Layering &amp; Spin Active</span>
-          </div>
+
 
           <div className="absolute bottom-4 right-6 z-20 font-mono text-[9px] text-pine uppercase tracking-widest flex items-center gap-1.5">
             <button

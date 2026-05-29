@@ -43,10 +43,6 @@ export default function AboutSection() {
               About Development
             </h2>
           </div>
-          
-          <div className="max-w-xs font-mono text-xs text-neutral-500 leading-relaxed xl:mb-2 border-l border-sand pl-4">
-            A MINIMALIST DESIGN CONTEXT INTERSECTED WITH MODERN TYPE-SAFE COMPLIANCE. CARVING EXPERIENCES THAT ENGAGE THE USER COGNITIVELY.
-          </div>
         </div>
 
         {/* Bento Grid Layout */}

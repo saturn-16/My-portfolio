@@ -94,10 +94,6 @@ export default function CertificateBookSection() {
               Certifications
             </h2>
           </div>
-          
-          <div className="max-w-xs font-mono text-xs text-neutral-500 leading-relaxed xl:mb-2 border-l border-sand pl-4">
-            CLICK ON THE RIGHT HALF TO TURN PAGES FORWARD OR THE LEFT HALF TO TURN BACK. ENJOY REALISTIC 3D PERSPECTIVES AND GLOSSY BLANK PAGE-BACK SHADES.
-          </div>
         </div>
 
         {/* 3D Scene Viewport */}

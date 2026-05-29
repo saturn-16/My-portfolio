@@ -88,10 +88,6 @@ export default function OffDutySection() {
               Off Duty
             </h3>
           </div>
-          
-          <p className="max-w-sm font-mono text-xs text-neutral-600 leading-relaxed border-l border-neutral-350 pl-4">
-            SHARPENING COGNITIVE SPECS BEYOND COMPILERS AND DETECTORS. COMPETITIVE GAMEPLAY IS GAURAV&apos;S LAB FOR DECISION-MAKING UNDER EXTREME LATENCY PRESSURES.
-          </p>
         </div>
 
         {/* Outer Grid Layout */}
