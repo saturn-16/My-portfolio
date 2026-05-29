@@ -111,6 +111,7 @@ export default function ContactDrawer({ isOpen, onClose }: ContactDrawerProps) {
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0 }}
             transition={{ type: "spring", damping: 25, stiffness: 220 }}
+            data-lenis-prevent
             className="relative w-full max-w-lg bg-cream border border-sand shadow-2xl rounded-3xl overflow-hidden z-10 flex flex-col max-h-[90vh]"
           >
             {/* Header */}

@@ -172,6 +172,7 @@ export default function AboutSection() {
                 animate={{ x: 0 }}
                 exit={{ x: "100%" }}
                 transition={{ type: "spring", damping: 25, stiffness: 180 }}
+                data-lenis-prevent
                 className="relative w-full max-w-xl h-full bg-cream-light border-l border-sand shadow-2xl overflow-y-auto z-10 p-8 flex flex-col justify-between"
               >
                 {/* Header */}

@@ -290,6 +290,7 @@ export default function WorksSection() {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 26, stiffness: 180 }}
+              data-lenis-prevent
               className="relative w-full max-w-2xl h-full bg-cream border-l border-sand shadow-2xl overflow-y-auto z-10 flex flex-col justify-between"
             >
               {/* Header Actions */}
