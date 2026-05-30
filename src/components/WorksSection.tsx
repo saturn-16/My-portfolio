@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Project } from "../types";
 import { PROJECTS_DATA } from "../data";
 import { ArrowUpRight, X, Sparkles, Folder, Calendar, Layers } from "lucide-react";
@@ -8,6 +8,16 @@ export default function WorksSection() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [expanded, setExpanded] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [isTouch, setIsTouch] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setIsTouch(
+        ("ontouchstart" in window) ||
+        navigator.maxTouchPoints > 0
+      );
+    }
+  }, []);
 
   // Desktop sticky container ref
   const desktopContainerRef = useRef<HTMLDivElement>(null);
@@ -40,7 +50,7 @@ export default function WorksSection() {
       {/* ========================================================================= */}
       <div 
         ref={desktopContainerRef} 
-        className="hidden md:block relative w-full h-[300vh] bg-cream-light"
+        className={`${isTouch ? "hidden" : "hidden md:block"} relative w-full h-[300vh] bg-cream-light`}
       >
         {/* Sticky Viewport frame */}
         <div className="sticky top-0 h-screen w-full overflow-hidden flex items-center">
@@ -162,7 +172,7 @@ export default function WorksSection() {
       {/* ========================================================================= */}
       {/* MOBILE VIEW: Elegant Standard Vertical Stack (under md) */}
       {/* ========================================================================= */}
-      <div className="block md:hidden py-20 px-6 bg-cream-light">
+      <div className={`${isTouch ? "block" : "block md:hidden"} py-20 px-6 bg-cream-light`}>
         <div className="max-w-xl mx-auto">
           {/* Header Block */}
           <div className="mb-12">

@@ -169,7 +169,7 @@ export default function AboutSection() {
                 exit={{ x: "100%" }}
                 transition={{ type: "spring", damping: 25, stiffness: 180 }}
                 data-lenis-prevent
-                className="relative w-full max-w-xl h-full bg-cream-light border-l border-sand shadow-2xl overflow-y-auto z-10 p-8 flex flex-col justify-between"
+                className="relative w-full max-w-xl h-full bg-cream-light border-l border-sand shadow-2xl overflow-y-auto z-10 p-5 sm:p-8 flex flex-col justify-between"
               >
                 {/* Header */}
                 <div className="flex items-center justify-between pb-6 border-b border-sand">
@@ -245,13 +245,13 @@ export default function AboutSection() {
                 </div>
 
                 {/* Footer block */}
-                <div className="pt-6 border-t border-sand flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="pt-6 border-t border-sand flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                   <span className="text-[10px] font-mono text-neutral-400">LOCALTIME IST // GO ATTAIN EXCELLENCE</span>
-                  <div className="flex items-center gap-3">
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
                     <a
                       href="/Gaurav_Kumar_Resume.pdf"
                       download="Gaurav_Kumar_Resume.pdf"
-                      className="flex items-center gap-2 bg-neutral-100 hover:bg-neutral-200 border border-sand px-5 py-2.5 rounded-xl text-xs font-mono tracking-widest uppercase text-pine transition-colors cursor-pointer"
+                      className="flex items-center justify-center gap-2 bg-neutral-100 hover:bg-neutral-200 border border-sand px-5 py-2.5 rounded-xl text-xs font-mono tracking-widest uppercase text-pine transition-colors cursor-pointer w-full sm:w-auto text-center"
                     >
                       Download CV <ArrowUpRight className="w-3.5 h-3.5 text-pine-light" />
                     </a>
@@ -263,7 +263,7 @@ export default function AboutSection() {
                           if (form) form.scrollIntoView({ behavior: "smooth" });
                         }, 200);
                       }}
-                      className="flex items-center gap-2 bg-pine text-cream hover:bg-pine-light px-5 py-2.5 rounded-xl text-xs font-mono tracking-widest uppercase transition-colors cursor-pointer"
+                      className="flex items-center justify-center gap-2 bg-pine text-cream hover:bg-pine-light px-5 py-2.5 rounded-xl text-xs font-mono tracking-widest uppercase transition-colors cursor-pointer w-full sm:w-auto text-center"
                     >
                       Acquire Dev Resources <ArrowUpRight className="w-3.5 h-3.5" />
                     </button>

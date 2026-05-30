@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Award, Shield, CheckCircle, Bookmark, Sparkles } from "lucide-react";
 
@@ -58,6 +58,17 @@ const CERTIFICATES_DATA: CertificatePage[] = [
 
 export default function CertificateBookSection() {
   const [currentPage, setCurrentPage] = useState(0); // 0 (closed) to 5 (fully flipped to back cover)
+  const [isTouch, setIsTouch] = useState(false);
+  const [expandedCert, setExpandedCert] = useState<number | null>(0); // Expand first card by default
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setIsTouch(
+        ("ontouchstart" in window) ||
+        navigator.maxTouchPoints > 0
+      );
+    }
+  }, []);
 
   const maxPages = 5;
 
@@ -96,17 +107,76 @@ export default function CertificateBookSection() {
           </div>
         </div>
 
-        {/* 3D Scene Viewport */}
-        <div className="relative flex flex-col items-center justify-center w-full min-h-[520px] perspective-[2000px] select-none">
-          
-          {/* Main Book Object with 3D Desk Tilt Rotation */}
-          <div 
-            style={{ 
-              transform: "rotateX(12deg) rotateY(-8deg)", 
-              transformStyle: "preserve-3d" 
-            }}
-            className="relative w-[330px] h-[390px] sm:w-[600px] sm:h-[420px] md:w-[720px] md:h-[460px] scale-[0.62] sm:scale-80 md:scale-95 lg:scale-100 transition-all duration-300 flex items-center justify-center"
-          >
+        {/* Mobile / Touch Responsive Layout OR Desktop 3D scene */}
+        {isTouch ? (
+          <div className="w-full max-w-2xl flex flex-col gap-4 mt-6">
+            {CERTIFICATES_DATA.map((cert, index) => {
+              const isExpanded = expandedCert === index;
+              return (
+                <div 
+                  key={cert.title}
+                  className="bg-white border border-sand rounded-2xl p-5 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col text-left"
+                >
+                  <button
+                    onClick={() => setExpandedCert(isExpanded ? null : index)}
+                    className="flex justify-between items-start w-full text-left gap-4 cursor-pointer focus:outline-hidden"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-xs shadow-xs border ${cert.badgeBg}`}>
+                        {cert.badgeText}
+                      </div>
+                      <div>
+                        <span className="text-[8px] font-mono uppercase tracking-widest text-[#9d9282] block">// {cert.issuer.toUpperCase()} COMPLIANCE</span>
+                        <h4 className="text-sm font-bold font-mono text-pine uppercase tracking-wider leading-tight">{cert.title}</h4>
+                      </div>
+                    </div>
+                    <span className="text-xs font-mono font-semibold text-pine bg-pine/5 px-2.5 py-0.5 rounded-full border border-sand shrink-0">
+                      {cert.year}
+                    </span>
+                  </button>
+
+                  <AnimatePresence initial={false}>
+                    {isExpanded && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="overflow-hidden"
+                      >
+                        <div className="pt-4 border-t border-neutral-100 mt-4 space-y-4">
+                          <p className="text-xs font-mono text-neutral-600 leading-relaxed">
+                            {cert.description}
+                          </p>
+                          <div className="flex flex-wrap gap-1 pt-2">
+                            {cert.tags.map((tag) => (
+                              <span 
+                                key={tag} 
+                                className="text-[9px] font-mono bg-neutral-100 border border-sand px-2 py-0.5 rounded-sm text-neutral-600"
+                              >
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="relative flex flex-col items-center justify-center w-full min-h-[520px] perspective-[2000px] select-none">
+            
+            {/* Main Book Object with 3D Desk Tilt Rotation */}
+            <div 
+              style={{ 
+                transform: "rotateX(12deg) rotateY(-8deg)", 
+                transformStyle: "preserve-3d" 
+              }}
+              className="relative w-[330px] h-[390px] sm:w-[600px] sm:h-[420px] md:w-[720px] md:h-[460px] scale-[0.62] sm:scale-80 md:scale-95 lg:scale-100 transition-all duration-300 flex items-center justify-center"
+            >
             {/* Spine Center Line Shadow Overlay */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[4px] h-[98%] bg-black/45 z-50 pointer-events-none filter blur-xs shadow-2xl" />
 
@@ -556,29 +626,32 @@ export default function CertificateBookSection() {
 
           </div>
         </div>
+        )}
 
         {/* Tactile Book-Flipping Controls Overlay */}
-        <div className="flex items-center gap-6 mt-8 z-20">
-          <button 
-            disabled={currentPage === 0}
-            onClick={() => handlePageClick("prev")}
-            className="px-5 py-2.5 bg-white hover:bg-neutral-100 disabled:opacity-40 border border-[#dfd9cb] rounded-full text-xs font-mono uppercase font-bold text-pine tracking-wider transition-all shadow-xs cursor-pointer disabled:cursor-not-allowed"
-          >
-            ← Flip Back
-          </button>
-          
-          <span className="font-mono text-xs text-neutral-500 uppercase tracking-widest self-center">
-            PAGE {currentPage} of {maxPages}
-          </span>
-          
-          <button 
-            disabled={currentPage === maxPages}
-            onClick={() => handlePageClick("next")}
-            className="px-5 py-2.5 bg-pine text-cream hover:bg-pine-light disabled:opacity-40 rounded-full text-xs font-mono uppercase font-bold tracking-wider transition-all shadow-xs cursor-pointer disabled:cursor-not-allowed"
-          >
-            Flip Forward →
-          </button>
-        </div>
+        {!isTouch && (
+          <div className="flex items-center gap-6 mt-8 z-20">
+            <button 
+              disabled={currentPage === 0}
+              onClick={() => handlePageClick("prev")}
+              className="px-5 py-2.5 bg-white hover:bg-neutral-100 disabled:opacity-40 border border-[#dfd9cb] rounded-full text-xs font-mono uppercase font-bold text-pine tracking-wider transition-all shadow-xs cursor-pointer disabled:cursor-not-allowed"
+            >
+              ← Flip Back
+            </button>
+            
+            <span className="font-mono text-xs text-neutral-500 uppercase tracking-widest self-center">
+              PAGE {currentPage} of {maxPages}
+            </span>
+            
+            <button 
+              disabled={currentPage === maxPages}
+              onClick={() => handlePageClick("next")}
+              className="px-5 py-2.5 bg-pine text-cream hover:bg-pine-light disabled:opacity-40 rounded-full text-xs font-mono uppercase font-bold tracking-wider transition-all shadow-xs cursor-pointer disabled:cursor-not-allowed"
+            >
+              Flip Forward →
+            </button>
+          </div>
+        )}
 
       </div>
     </section>

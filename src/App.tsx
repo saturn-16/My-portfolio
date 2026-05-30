@@ -80,16 +80,16 @@ export default function App() {
               
               {/* Giant Forest Green text layered in back */}
               <div className="absolute inset-0 flex flex-col justify-center items-center select-none pointer-events-none z-0">
-                <span className="text-[12vw] xs:text-[11vw] font-oswald font-extrabold uppercase text-pine text-center tracking-tight leading-none scale-y-115">
+                <span className="text-[9vw] sm:text-[10vw] md:text-[12vw] font-oswald font-extrabold uppercase text-pine text-center tracking-tight leading-none scale-y-115">
                   CYBERSECURITY
                 </span>
-                <span className="text-[12vw] xs:text-[11vw] font-oswald font-extrabold uppercase text-pine text-center tracking-tight leading-none scale-y-115">
+                <span className="text-[9vw] sm:text-[10vw] md:text-[12vw] font-oswald font-extrabold uppercase text-pine text-center tracking-tight leading-none scale-y-115">
                   DEVELOPER &lt;/&gt;
                 </span>
               </div>
 
               {/* Centered curly haired creative master portrait */}
-              <div className="relative w-52 h-52 md:w-80 md:h-80 rounded-full p-2 border border-pine-light/30 z-10 flex items-center justify-center">
+              <div className="relative w-40 h-40 sm:w-52 sm:h-52 md:w-80 md:h-80 rounded-full p-2 border border-pine-light/30 z-10 flex items-center justify-center">
                 
                 {/* Visual decorative rings underneath profile */}
                 <div className="absolute inset-2 border border-pine-light/20 rounded-full animate-spin" style={{ animationDuration: "30s" }} />
