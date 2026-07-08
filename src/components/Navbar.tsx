@@ -13,7 +13,7 @@ export default function Navbar({ onContactClick }: NavbarProps) {
 
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ["hero", "works", "about", "tech-stack", "certificates", "off-duty"];
+      const sections = ["hero", "works", "about", "tech-stack", "certificates"];
       const scrollPosition = window.scrollY + 200;
 
       for (const section of sections) {
@@ -48,7 +48,6 @@ export default function Navbar({ onContactClick }: NavbarProps) {
     { id: "about", label: "About" },
     { id: "tech-stack", label: "Tech Stack" },
     { id: "certificates", label: "Certificates" },
-    { id: "off-duty", label: "Off Duty" },
   ];
 
   // Disable main body scroll when mobile menu is open to prevent double scrollbars

@@ -5,13 +5,15 @@ import AboutSection from "./components/AboutSection";
 import WorksSection from "./components/WorksSection";
 import SmoothScroll from "./components/SmoothScroll";
 import TechStackSection from "./components/TechStackSection";
-import CertificateBookSection from "./components/CertificateBookSection";
+import OrbitCardStackSection from "./components/OrbitCardStack";
+import Preloader from "./components/Preloader";
 
 import ContactDrawer from "./components/ContactDrawer";
 import { ArrowUpRight, Copy, Check, Clock, Code, Linkedin, Github, Mail } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
 export default function App() {
+  const [loading, setLoading] = useState(true);
   const [contactOpen, setContactOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [eindhovenTime, setEindhovenTime] = useState("");
@@ -50,7 +52,17 @@ export default function App() {
   };
 
   return (
-    <div className="w-full min-h-screen bg-pine text-[#1a1a1a] flex flex-col items-center">
+    <>
+      <AnimatePresence>
+        {loading && <Preloader onComplete={() => setLoading(false)} />}
+      </AnimatePresence>
+      <div 
+        style={{
+          transition: "opacity 0.8s cubic-bezier(0.25, 1, 0.5, 1)",
+          opacity: loading ? 0 : 1,
+        }}
+        className="w-full min-h-screen bg-pine text-[#1a1a1a] flex flex-col items-center"
+      >
       <SmoothScroll />
       
       {/* Outer framing wrapper to feel like an elegant editorial poster */}
@@ -200,8 +212,8 @@ export default function App() {
           {/* Tech Stack Physics Simulation */}
           <TechStackSection />
 
-          {/* 3D Book-Flip Certificate Section */}
-          <CertificateBookSection />
+          {/* Orbit Card Stack Certificate Section */}
+          <OrbitCardStackSection />
 
 
 
@@ -327,6 +339,7 @@ export default function App() {
       {/* Slide-Up Contact Requests dispatch modal */}
       <ContactDrawer isOpen={contactOpen} onClose={() => setContactOpen(false)} />
 
-    </div>
+      </div>
+    </>
   );
 }
