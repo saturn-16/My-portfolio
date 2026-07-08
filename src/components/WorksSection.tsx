@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from "react";
 import { Project } from "../types";
 import { PROJECTS_DATA } from "../data";
-import { ArrowUpRight, X, Sparkles, Folder, Calendar, Layers } from "lucide-react";
+import { ArrowUpRight, X, Sparkles, Folder, Calendar, Layers, Github } from "lucide-react";
 import { motion, AnimatePresence, useScroll, useTransform } from "motion/react";
 
 export default function WorksSection() {
@@ -28,7 +28,7 @@ export default function WorksSection() {
   // Map scroll position to horizontal translation for desktop
   // 1 intro panel + 3 projects = moving track is very wide. 
   // We translate by -62% which brings the final card fully into the viewport.
-  const horizontalX = useTransform(scrollYProgress, [0, 1], ["0%", "-62%"]);
+  const horizontalX = useTransform(scrollYProgress, [0, 1], ["0%", "-68%"]);
 
   // Expose categories for mobile filter
   const categories = ["All", "Cybersecurity SaaS", "AI & ML", "Computer Vision"];
@@ -155,6 +155,41 @@ export default function WorksSection() {
               </motion.div>
             ))}
 
+            {/* MORE PROJECTS — GitHub CTA Card */}
+            <motion.a
+              href="https://github.com/saturn-16"
+              target="_blank"
+              rel="noopener noreferrer"
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              whileHover={{ y: -8 }}
+              className="group w-[620px] h-[65vh] flex-shrink-0 bg-pine border border-pine-light/30 rounded-3xl p-6 flex flex-col items-center justify-center shadow-xs hover:shadow-xl transition-all cursor-pointer relative overflow-hidden"
+            >
+              {/* Background grid pattern */}
+              <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none" />
+              
+              <div className="relative z-10 flex flex-col items-center text-center">
+                <div className="w-20 h-20 rounded-full bg-white/10 border border-white/20 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-300">
+                  <Github className="w-10 h-10 text-cream" />
+                </div>
+                <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-cream/40 mb-3">// EXPLORE THE FULL ARCHIVE</span>
+                <h3 className="text-5xl font-oswald font-extrabold uppercase text-cream tracking-tight leading-none mb-3">
+                  MORE
+                </h3>
+                <h3 className="text-5xl font-oswald font-extrabold uppercase text-cream tracking-tight leading-none mb-6">
+                  PROJECTS
+                </h3>
+                <p className="text-xs font-mono text-cream/50 max-w-xs leading-relaxed mb-8">
+                  DISCOVER ALL REPOSITORIES, OPEN SOURCE CONTRIBUTIONS, AND EXPERIMENTAL BUILDS ON GITHUB.
+                </p>
+                <div className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 border border-white/20 rounded-full text-xs font-mono font-bold tracking-widest uppercase text-cream group-hover:bg-white/20 transition-all">
+                  VIEW ON GITHUB <ArrowUpRight className="w-3.5 h-3.5" />
+                </div>
+              </div>
+            </motion.a>
+
             {/* 3. Outer Frame End Cap Tagline */}
             <div className="w-[300px] flex-shrink-0 flex flex-col justify-center pl-8 border-l border-sand h-[40vh] select-none pointer-events-none">
               <span className="text-[10px] font-mono tracking-widest text-neutral-300 uppercase block mb-1">
@@ -264,6 +299,23 @@ export default function WorksSection() {
               ))}
             </AnimatePresence>
           </div>
+
+          {/* MORE PROJECTS — GitHub CTA (Mobile) */}
+          <a
+            href="https://github.com/saturn-16"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-6 flex flex-col items-center justify-center bg-pine border border-pine-light/30 rounded-2xl p-8 text-center hover:bg-pine-light transition-all"
+          >
+            <Github className="w-8 h-8 text-cream mb-3" />
+            <h3 className="text-2xl font-oswald font-extrabold uppercase text-cream tracking-tight leading-none mb-1">
+              MORE PROJECTS
+            </h3>
+            <p className="text-[10px] font-mono text-cream/50 mb-4">EXPLORE THE FULL ARCHIVE ON GITHUB</p>
+            <span className="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold tracking-widest uppercase text-cream/80">
+              VIEW ON GITHUB <ArrowUpRight className="w-3 h-3" />
+            </span>
+          </a>
 
           {/* View All Button */}
           {filteredProjects.length > 3 && (

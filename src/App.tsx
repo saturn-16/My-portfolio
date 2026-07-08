@@ -1,21 +1,29 @@
 import { useState, useEffect } from "react";
-import { GAURAV_BIO } from "./data";
+import { GAURAV_BIO, HERO_ROLES } from "./data";
 import Navbar from "./components/Navbar";
-import WorksSection from "./components/WorksSection";
 import AboutSection from "./components/AboutSection";
-import OffDutySection from "./components/OffDutySection";
+import WorksSection from "./components/WorksSection";
 import SmoothScroll from "./components/SmoothScroll";
 import TechStackSection from "./components/TechStackSection";
 import CertificateBookSection from "./components/CertificateBookSection";
 
 import ContactDrawer from "./components/ContactDrawer";
-import { ArrowUpRight, Copy, Check, Clock, Code } from "lucide-react";
-import { motion } from "motion/react";
+import { ArrowUpRight, Copy, Check, Clock, Code, Linkedin, Github, Mail } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
 
 export default function App() {
   const [contactOpen, setContactOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [eindhovenTime, setEindhovenTime] = useState("");
+  const [roleIndex, setRoleIndex] = useState(0);
+
+  // Rotate hero headline every 3 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setRoleIndex((prev) => (prev + 1) % HERO_ROLES.length);
+    }, 2000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Bhopal timezone clock
   useEffect(() => {
@@ -78,15 +86,24 @@ export default function App() {
             {/* Massive Hero Text Grid overlay with Curly-Haired Portrait */}
             <div className="w-full flex justify-center items-center relative my-12 h-[340px] md:h-[450px]">
               
-              {/* Giant Forest Green text layered in back */}
-              <div className="absolute inset-0 flex flex-col justify-center items-center select-none pointer-events-none z-0">
-                <span className="text-[9vw] sm:text-[10vw] md:text-[12vw] font-oswald font-extrabold uppercase text-pine text-center tracking-tight leading-none scale-y-115">
-                  CYBERSECURITY
-                </span>
-                <span className="text-[9vw] sm:text-[10vw] md:text-[12vw] font-oswald font-extrabold uppercase text-pine text-center tracking-tight leading-none scale-y-115">
-                  DEVELOPER &lt;/&gt;
-                </span>
-              </div>
+              {/* Giant Forest Green text layered in back — animated rotation */}
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={roleIndex}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -30 }}
+                  transition={{ duration: 0.5, ease: "easeInOut" }}
+                  className="absolute inset-0 flex flex-col justify-center items-center select-none pointer-events-none z-0"
+                >
+                  <span className="text-[9vw] sm:text-[10vw] md:text-[12vw] font-oswald font-extrabold uppercase text-pine text-center tracking-tight leading-none scale-y-115">
+                    {HERO_ROLES[roleIndex].line1}
+                  </span>
+                  <span className="text-[9vw] sm:text-[10vw] md:text-[12vw] font-oswald font-extrabold uppercase text-pine text-center tracking-tight leading-none scale-y-115">
+                    {HERO_ROLES[roleIndex].line2}
+                  </span>
+                </motion.div>
+              </AnimatePresence>
 
               {/* Centered curly haired creative master portrait */}
               <div className="relative w-40 h-40 sm:w-52 sm:h-52 md:w-80 md:h-80 rounded-full p-2 border border-pine-light/30 z-10 flex items-center justify-center">
@@ -121,11 +138,38 @@ export default function App() {
 
             </div>
 
+            {/* Social Icons Row — horizontally below the photo */}
+            <div className="flex justify-center items-center gap-3 mt-2 relative z-20">
+              <a href={GAURAV_BIO.socials.linkedin} target="_blank" rel="noopener noreferrer" className="p-2.5 bg-pine/10 hover:bg-pine text-pine hover:text-cream rounded-full transition-all duration-300 hover:scale-110" title="LinkedIn">
+                <Linkedin className="w-4 h-4" />
+              </a>
+              <a href={GAURAV_BIO.socials.github} target="_blank" rel="noopener noreferrer" className="p-2.5 bg-pine/10 hover:bg-pine text-pine hover:text-cream rounded-full transition-all duration-300 hover:scale-110" title="GitHub">
+                <Github className="w-4 h-4" />
+              </a>
+              <a href={GAURAV_BIO.socials.leetcode} target="_blank" rel="noopener noreferrer" className="p-2.5 bg-pine/10 hover:bg-pine text-pine hover:text-cream rounded-full transition-all duration-300 hover:scale-110" title="LeetCode">
+                <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor">
+                  <path d="M13.483 0a1.374 1.374 0 0 0-.961.438L7.116 6.226l-3.854 4.126a5.266 5.266 0 0 0-1.209 2.104 5.35 5.35 0 0 0-.125.513 5.527 5.527 0 0 0 .062 2.362 5.83 5.83 0 0 0 .349 1.017 5.938 5.938 0 0 0 1.271 1.818l4.277 4.193.039.038c2.248 2.165 5.852 2.133 8.063-.074l2.396-2.392c.54-.54.54-1.414.003-1.955a1.378 1.378 0 0 0-1.951-.003l-2.396 2.392a3.021 3.021 0 0 1-4.205.038l-.02-.019-4.276-4.193c-.652-.64-.972-1.469-.948-2.263a2.68 2.68 0 0 1 .066-.523 2.545 2.545 0 0 1 .619-1.164L9.13 8.114c1.058-1.134 3.204-1.27 4.43-.278l3.501 2.831c.593.48 1.461.387 1.94-.207a1.384 1.384 0 0 0-.207-1.943l-3.5-2.831c-.8-.647-1.766-1.045-2.774-1.202l2.015-2.158A1.384 1.384 0 0 0 13.483 0zm-2.866 12.815a1.38 1.38 0 0 0-1.38 1.382 1.38 1.38 0 0 0 1.38 1.382H20.79a1.38 1.38 0 0 0 1.38-1.382 1.38 1.38 0 0 0-1.38-1.382z"/>
+                </svg>
+              </a>
+              <a href={`mailto:${GAURAV_BIO.email}`} className="p-2.5 bg-pine/10 hover:bg-pine text-pine hover:text-cream rounded-full transition-all duration-300 hover:scale-110" title="Email">
+                <Mail className="w-4 h-4" />
+              </a>
+            </div>
+
             {/* Bottom brief manifesto block */}
             <div className="max-w-xl text-center relative z-25 mt-6 px-4">
-              <p className="font-mono text-xs md:text-sm text-neutral-600 leading-relaxed uppercase mb-8">
-                {GAURAV_BIO.shortIntro}
-              </p>
+              <AnimatePresence mode="wait">
+                <motion.p
+                  key={roleIndex}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.4, ease: "easeInOut" }}
+                  className="font-mono text-xs md:text-sm text-neutral-600 leading-relaxed uppercase mb-8"
+                >
+                  {HERO_ROLES[roleIndex].description}
+                </motion.p>
+              </AnimatePresence>
               
               {/* CTA Actions Group */}
               <div className="flex flex-wrap justify-center gap-4 relative z-25">
@@ -159,8 +203,6 @@ export default function App() {
           {/* 3D Book-Flip Certificate Section */}
           <CertificateBookSection />
 
-          {/* Off Duty Hobby Console */}
-          <OffDutySection />
 
 
 

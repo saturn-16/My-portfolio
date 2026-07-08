@@ -10,9 +10,28 @@ export const GAURAV_BIO = {
   phone: "+91-9810817335",
   socials: {
     github: "https://github.com/saturn-16",
-    linkedin: "https://www.linkedin.com/in/gaur4avkumar/"
+    linkedin: "https://www.linkedin.com/in/gaur4avkumar/",
+    leetcode: "https://leetcode.com/u/Saturn_16/"
   }
 };
+
+export const HERO_ROLES = [
+  {
+    line1: "CYBERSECURITY",
+    line2: "DEVELOPER </>",
+    description: "Cybersecurity undergraduate specializing in AI-driven threat detection and secure web systems. CTF winner with hands-on experience in React, FastAPI, TensorFlow, and Docker."
+  },
+  {
+    line1: "FULL STACK",
+    line2: "DEVELOPER </>",
+    description: "Full stack developer building modern, scalable web applications end to end. Experienced in React, FastAPI, TensorFlow, and Docker with a security-first mindset."
+  },
+  {
+    line1: "PROBLEM",
+    line2: "SOLVER </>",
+    description: "Analytical problem solver who thrives on complex challenges. CTF competitor and algorithmic thinker with a passion for building elegant, efficient solutions."
+  }
+];
 
 export const PROJECTS_DATA: Project[] = [
   {
