@@ -229,7 +229,7 @@ function getBotResponse(query: string): string {
 
   // 1. Who are you?
   if (/who are you|your name/i.test(q)) {
-    return "😸 *yawn* I'm just Pixel, his helper cat. But here's what he would answer:\n\n\"Hey! I'm Gaurav 👋\n\nI'm a Computer Science student who enjoys building things with code. Most of the time you'll find me working on AI, cybersecurity, web development, or randomly rebuilding my portfolio for the 100th time.\n\nI love turning weird ideas into projects, learning new tech, and occasionally breaking things while trying to fix other things.\"";
+    return "😸 *yawn* I'm just Neko, his helper cat. But here's what he would answer:\n\n\"Hey! I'm Gaurav 👋\n\nI'm a Computer Science student who enjoys building things with code. Most of the time you'll find me working on AI, cybersecurity, web development, or randomly rebuilding my portfolio for the 100th time.\n\nI love turning weird ideas into projects, learning new tech, and occasionally breaking things while trying to fix other things.\"";
   }
 
   // 2. Tell me about yourself
@@ -374,7 +374,7 @@ export default function ChatbotCat() {
           setMessages([
             {
               sender: "bot",
-              text: "Hey! meow! 👋 I'm Pixel, Gaurav's digital helper cat.",
+              text: "Hey! meow! 👋 I'm Neko, Gaurav's digital helper cat.",
               timestamp: new Date(),
             },
           ]);
@@ -559,7 +559,7 @@ export default function ChatbotCat() {
               <div className="flex items-center gap-2">
                 <div className="size-2 rounded-full bg-[#10be7e] animate-pulse" />
                 <span className="text-xs font-mono tracking-widest text-[#dfefe4] uppercase font-bold">
-                  Pixel Assistant
+                  Assistant Neko
                 </span>
               </div>
               <button 
@@ -608,7 +608,7 @@ export default function ChatbotCat() {
             {/* Clickable Predefined Preset Questions Footer */}
             <div className="p-3 border-t border-zinc-800 rounded-b-2xl bg-zinc-900/30">
               <span className="text-[9px] font-mono text-zinc-500 uppercase tracking-widest block mb-2 text-center select-none">
-                Select a topic to ask Pixel
+                Select a topic to ask Neko
               </span>
               <div className="flex flex-wrap gap-1.5 justify-center max-h-[110px] overflow-y-auto custom-scrollbar overscroll-contain">
                 {PRESETS.map((preset, idx) => (
@@ -689,7 +689,7 @@ export default function ChatbotCat() {
             onClick={handleFeedSalmon}
             disabled={isFeeding}
             className="absolute bottom-[20px] right-[100px] z-50 p-2.5 rounded-full bg-amber-500 hover:bg-amber-400 text-white shadow-lg cursor-pointer transition-all hover:scale-110 flex items-center justify-center border border-amber-600 disabled:opacity-50 disabled:cursor-not-allowed group/feed"
-            title="Feed Pixel some Salmon 🐟"
+            title="Feed Neko some Salmon 🐟"
           >
             <span className="text-sm select-none">🐟</span>
             <span className="max-w-0 overflow-hidden group-hover/feed:max-w-[100px] group-hover/feed:ml-1 text-[9px] font-mono uppercase tracking-widest font-bold transition-all duration-300">
