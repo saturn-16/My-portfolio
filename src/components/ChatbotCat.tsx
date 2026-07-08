@@ -342,6 +342,14 @@ export default function ChatbotCat() {
   const [walkFrame, setWalkFrame] = useState(0);
   const [messages, setMessages] = useState<Message[]>([]);
   const [isTyping, setIsTyping] = useState(false);
+  const [salmonCount, setSalmonCount] = useState(() => {
+    const saved = localStorage.getItem("salmon_count");
+    return saved ? parseInt(saved, 10) : 0;
+  });
+  const [isFeeding, setIsFeeding] = useState(false);
+  const [showFish, setShowFish] = useState(false);
+  const [showHeart, setShowHeart] = useState(false);
+  const [showBubble, setShowBubble] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -492,6 +500,33 @@ export default function ChatbotCat() {
     }, 1000);
   };
 
+  // Handle feeding Pixel some Salmon
+  const handleFeedSalmon = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent opening the chat box
+    if (isFeeding) return;
+
+    setIsFeeding(true);
+    setShowFish(true);
+
+    const nextCount = salmonCount + 1;
+    setSalmonCount(nextCount);
+    localStorage.setItem("salmon_count", nextCount.toString());
+
+    // Step 1: Fish falls (takes 600ms)
+    setTimeout(() => {
+      setShowFish(false);
+      setShowHeart(true);
+      setShowBubble(true);
+
+      // Step 2: Munching / Love float (takes 2000ms)
+      setTimeout(() => {
+        setShowHeart(false);
+        setShowBubble(false);
+        setIsFeeding(false);
+      }, 2000);
+    }, 600);
+  };
+
   return (
     <div className="fixed bottom-6 right-6 z-[999] font-sans flex flex-col items-end pointer-events-none">
       
@@ -596,26 +631,80 @@ export default function ChatbotCat() {
       {/* 2. CORNER SLEEPING CAT OVERLAY */}
       {!isOpen && (
         <div className="pointer-events-auto flex flex-col items-end relative">
-          {/* Permanent Floating Callout Label & Arrow */}
-          <div className="absolute bottom-[110px] right-2 flex flex-col items-end animate-bounce select-none pointer-events-none whitespace-nowrap z-50 [animation-duration:2.5s]">
-            <span className="text-[10px] font-mono tracking-wider font-semibold text-[#04251b] bg-[#dfefe4] border border-[#b2d8c3] px-2.5 py-1 rounded-full shadow-md">
-              wake this lazy cat 🐾
+          
+          {/* 🐟 Falling Salmon Animation */}
+          {showFish && (
+            <motion.div
+              initial={{ y: -65, x: -35, opacity: 0, rotate: -45 }}
+              animate={{ y: 25, x: -15, opacity: 1, rotate: 0 }}
+              transition={{ duration: 0.6, ease: "easeIn" }}
+              className="absolute z-50 text-2xl select-none"
+            >
+              🐟
+            </motion.div>
+          )}
+
+          {/* ❤️ Floating Love Hearts & Count */}
+          {showHeart && (
+            <motion.div
+              initial={{ y: 10, x: -20, opacity: 0, scale: 0.8 }}
+              animate={{ y: -70, x: -20, opacity: 1, scale: 1.25 }}
+              transition={{ duration: 1.2, ease: "easeOut" }}
+              className="absolute z-50 text-red-500 text-sm font-bold font-mono flex items-center gap-1 select-none"
+            >
+              ❤️ +1
+            </motion.div>
+          )}
+
+          {/* 💬 Cat Reaction bubble */}
+          {showBubble && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              className="absolute bottom-[105px] right-[80px] bg-zinc-900 border border-zinc-800 text-white rounded-xl p-2.5 text-[10px] font-mono shadow-md w-[140px] text-center select-none z-50 leading-relaxed"
+            >
+              {salmonCount % 5 === 0 
+                ? "😼 *purrs loudly* Gaurav might get to live today."
+                : "😸 *munch* Thank you! Wake me up later."}
+            </motion.div>
+          )}
+
+          {/* Permanent Floating Callout Label & Arrow (Hide during feeding) */}
+          {!isFeeding && (
+            <div className="absolute bottom-[110px] right-2 flex flex-col items-end animate-bounce select-none pointer-events-none whitespace-nowrap z-45 [animation-duration:2.5s]">
+              <span className="text-[10px] font-mono tracking-wider font-semibold text-[#04251b] bg-[#dfefe4] border border-[#b2d8c3] px-2.5 py-1 rounded-full shadow-md">
+                wake this lazy cat 🐾
+              </span>
+              {/* Curved pointing arrow */}
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-[#10be7e] mr-6 -mt-1 transform rotate-[40deg]">
+                <path d="M4 4c6 0 10 4 10 10" strokeLinecap="round" />
+                <path d="M8 14h6v-6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+          )}
+
+          {/* Feed Salmon Floating Button */}
+          <button
+            type="button"
+            onClick={handleFeedSalmon}
+            disabled={isFeeding}
+            className="absolute bottom-[20px] right-[100px] z-50 p-2.5 rounded-full bg-amber-500 hover:bg-amber-400 text-white shadow-lg cursor-pointer transition-all hover:scale-110 flex items-center justify-center border border-amber-600 disabled:opacity-50 disabled:cursor-not-allowed group/feed"
+            title="Feed Pixel some Salmon 🐟"
+          >
+            <span className="text-sm select-none">🐟</span>
+            <span className="max-w-0 overflow-hidden group-hover/feed:max-w-[100px] group-hover/feed:ml-1 text-[9px] font-mono uppercase tracking-widest font-bold transition-all duration-300">
+              Feed ({salmonCount})
             </span>
-            {/* Curved pointing arrow */}
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-[#10be7e] mr-6 -mt-1 transform rotate-[40deg]">
-              <path d="M4 4c6 0 10 4 10 10" strokeLinecap="round" />
-              <path d="M8 14h6v-6" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </div>
+          </button>
 
           <button
             type="button"
             onClick={() => setIsOpen(true)}
             className="flex flex-col items-center group relative cursor-pointer outline-none focus:ring-0 focus:outline-hidden"
           >
-            {/* Sleeping Cat SVG */}
+            {/* Sleeping/Sitting Cat SVG */}
             <div className="transition-transform group-hover:scale-110 duration-200">
-              <PixelCat state="sleeping" direction="right" frame={0} />
+              <PixelCat state={isFeeding ? "sitting" : "sleeping"} direction="right" frame={0} />
             </div>
           </button>
         </div>
