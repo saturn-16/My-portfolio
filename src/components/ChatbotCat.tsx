@@ -229,17 +229,17 @@ function getBotResponse(query: string): string {
 
   // 1. Who are you?
   if (/who are you|your name/i.test(q)) {
-    return "😸 *yawn* I'm just Pixel, his helper cat. But here is the frank truth about Gaurav:\n\n\"Hey! I'm Gaurav 👋\n\nI'm a Computer Science student who enjoys building things with code. Most of the time you'll find me working on AI, cybersecurity, web development, or randomly rebuilding my portfolio for the 100th time.\n\nI love turning weird ideas into projects, learning new tech, and occasionally breaking things while trying to fix other things.\"";
+    return "😸 *yawn* I'm just Pixel, his helper cat. But here's what he would answer:\n\n\"Hey! I'm Gaurav 👋\n\nI'm a Computer Science student who enjoys building things with code. Most of the time you'll find me working on AI, cybersecurity, web development, or randomly rebuilding my portfolio for the 100th time.\n\nI love turning weird ideas into projects, learning new tech, and occasionally breaking things while trying to fix other things.\"";
   }
 
   // 2. Tell me about yourself
   if (/tell me about yourself|about yourself|about him|about you/i.test(q)) {
-    return "🐾 Fine, let me tell you about him:\n\n\"I'm Gaurav Kumar, a CSE student specializing in Cybersecurity. I started with simple Python projects (shoutout to my first Jarvis 😄), and now I spend most of my time building AI-powered security tools, full-stack web apps, and experimenting with whatever catches my interest. Still learning, still making mistakes, but every project teaches me something new.\"";
+    return "🐾 Fine, let me tell you about him. Here's what he would answer:\n\n\"I'm Gaurav Kumar, a CSE student specializing in Cybersecurity. I started with simple Python projects (shoutout to my first Jarvis 😄), and now I spend most of my time building AI-powered security tools, full-stack web apps, and experimenting with whatever catches my interest. Still learning, still making mistakes, but every project teaches me something new.\"";
   }
 
   // 3. What do you do?
   if (/what do you do|what you do/i.test(q)) {
-    return "🙄 What does he do? Well:\n\n\"I build stuff. Sometimes it's AI. Sometimes it's cybersecurity. Sometimes it's React websites with way too many animations. If I find something interesting, there's a good chance I'll try building it.\"";
+    return "🙄 What does he do? Well, here's what he would answer:\n\n\"I build stuff. Sometimes it's AI. Sometimes it's cybersecurity. Sometimes it's React websites with way too many animations. If I find something interesting, there's a good chance I'll try building it.\"";
   }
 
   // 4. What are you interested in?
@@ -249,7 +249,7 @@ function getBotResponse(query: string): string {
 
   // 5. Are you an expert?
   if (/expert|experienced|senior/i.test(q)) {
-    return "😼 Expert? Haha, absolutely not:\n\n\"Nope. I'm a student who's learning every day. I don't know everything, and I'm completely okay with that. I enjoy solving problems, reading documentation, watching tutorials, and building projects until things finally click.\"";
+    return "😼 Expert? Haha, absolutely not. Here's what he would answer:\n\n\"Nope. I'm a student who's learning every day. I don't know everything, and I'm completely okay with that. I enjoy solving problems, reading documentation, watching tutorials, and building projects until things finally click.\"";
   }
 
   // 6. Why did you build this portfolio?
@@ -259,7 +259,7 @@ function getBotResponse(query: string): string {
 
   // 7. What's your favorite project?
   if (/favorite project/i.test(q)) {
-    return "😸 \"That's like asking someone to pick a favorite child 😅. It changes every few weeks. Usually it's whichever project I'm currently obsessed with.\"";
+    return "😸 Here's what he would answer:\n\n\"That's like asking someone to pick a favorite child 😅. It changes every few weeks. Usually it's whichever project I'm currently obsessed with.\"";
   }
 
   // 8. What are you learning right now?
@@ -269,12 +269,12 @@ function getBotResponse(query: string): string {
 
   // 9. Fun fact?
   if (/fun fact/i.test(q)) {
-    return "😹 Here is a fun fact about his portfolio redesign addiction:\n\n\"I have a habit of redesigning my portfolio instead of adding new features. 'Just one small UI change...' Three hours later, I've rebuilt the entire homepage.\"";
+    return "😹 Here is a fun fact about his portfolio redesign addiction. Here's what he would answer:\n\n\"I have a habit of redesigning my portfolio instead of adding new features. 'Just one small UI change...' Three hours later, I've rebuilt the entire homepage.\"";
   }
 
   // 10. Can I hire you?
   if (/hire|job|internship|project/i.test(q)) {
-    return "🐾 Please do! Maybe then he can afford better salmon treats for me:\n\n\"Absolutely! If you think I'd be a good fit for your project, internship, or just want to chat about tech, feel free to reach out. I'm always happy to connect.\"";
+    return "🐾 Please do! Maybe then he can afford better salmon treats for me. Here's what he would answer:\n\n\"Absolutely! If you think I'd be a good fit for your project, internship, or just want to chat about tech, feel free to reach out. I'm always happy to connect.\"";
   }
 
   // 11. Do you touch grass?
@@ -460,7 +460,7 @@ export default function ChatbotCat() {
 
   // Predefined topics / questions
   const PRESETS = [
-    { label: "Who is he? 👤", query: "Who is he?" },
+    { label: "Who are you? 👤", query: "Who are you?" },
     { label: "His Achievements 🏆", query: "His achievements" },
     { label: "What is his tech stack? 🛠️", query: "What is his tech stack?" },
     { label: "Does he touch grass? 🌱", query: "Do you touch grass?" },
