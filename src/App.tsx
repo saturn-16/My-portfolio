@@ -7,6 +7,7 @@ import SmoothScroll from "./components/SmoothScroll";
 import TechStackSection from "./components/TechStackSection";
 import OrbitCardStackSection from "./components/OrbitCardStack";
 import Preloader from "./components/Preloader";
+import ChatbotCat from "./components/ChatbotCat";
 
 import ContactDrawer from "./components/ContactDrawer";
 import { ArrowUpRight, Copy, Check, Clock, Code, Linkedin, Github, Mail } from "lucide-react";
@@ -338,6 +339,9 @@ export default function App() {
 
       {/* Slide-Up Contact Requests dispatch modal */}
       <ContactDrawer isOpen={contactOpen} onClose={() => setContactOpen(false)} />
+
+      {/* Casual Pixel Cat Chatbot */}
+      <ChatbotCat />
 
       </div>
     </>
