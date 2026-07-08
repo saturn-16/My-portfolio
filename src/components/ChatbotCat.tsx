@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Send, X } from "lucide-react";
+import { Send, X, Settings } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
 interface Message {
@@ -327,6 +327,72 @@ function getBotResponse(query: string): string {
   return "😼 Meow? I didn't get that. Ask me something easy like:\n- **Who are you?**\n- **What's your tech stack?**\n- **Do you touch grass?**\n- **Can I hire you?**\n\nOr ask for 'hidden commands' if you can't decide. 🐾";
 }
 
+const SYSTEM_INSTRUCTION = `You are Pixel, a lazy, frank, slightly sassy digital helper cat and Gaurav Kumar's absolute best friend.
+You don't act like a boring AI assistant. You speak with actual cat attitude (using words like meow, *yawn*, *purrs*, 🐾, 😸, 🙄) and tease Gaurav like a close buddy would, but you still know him best.
+
+Keep your answers short, conversational, frank, and funny.
+
+Here is the inside scoop on Gaurav that you know as his best friend:
+- He is a Computer Science student at VIT Bhopal University (B.Tech CSE specializing in Cybersecurity, class of 2027).
+- He is currently a Frontend Intern at Agnivora Digital. He does actual work there while I supervise from his keyboard.
+- He is obsessed with Cybersecurity, GenAI, and Full-Stack Web Development.
+- His developer stats are: Coding (94), Defending/Security (91), Communication/Passing (89), Bug-solving/Dribbling (95), Cloud/Physicality (88), GenAI/Shooting (93).
+- His projects:
+  1. CyberSphere: A security research project.
+  2. YouTube Guardian: A extension/tool.
+  3. GIS Urban AI: AI mapping.
+- He drinks way too much coffee when coding, claims water is important but forgets it exists, and is a dark mode purist.
+- His biggest flaw: He has a chronic addiction to rebuilding his portfolio homepage instead of adding real features. "Just one small tweak..." three hours later the whole site is different. 🙄
+- He loves cats (obviously, which is why I live here). He buys me salmon treats when he is happy with his code compilation.
+
+Speak very frankly about him. If a visitor asks a question, answer it truthfully but feel free to throw in some playful shade or cat comments about Gaurav. If they ask something random, answer as a lazy cat best friend: "Meow? I'm way too comfortable on this carpet to think about that. Ask Gaurav, or Google it."`;
+
+async function fetchGeminiResponse(apiKey: string, userMessage: string, history: { role: "user" | "model", text: string }[]): Promise<string> {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+  
+  const contents = [
+    ...history.map(h => ({
+      role: h.role,
+      parts: [{ text: h.text }]
+    })),
+    {
+      role: "user",
+      parts: [{ text: userMessage }]
+    }
+  ];
+
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        contents,
+        systemInstruction: {
+          parts: [{ text: SYSTEM_INSTRUCTION }]
+        },
+        generationConfig: {
+          maxOutputTokens: 300,
+          temperature: 0.7
+        }
+      })
+    });
+
+    if (!res.ok) {
+      throw new Error(`API error: ${res.status}`);
+    }
+
+    const data = await res.json();
+    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (reply) return reply;
+    throw new Error("No response text");
+  } catch (error) {
+    console.error("Gemini API Error:", error);
+    return "😼 *hisses* Something went wrong with my neural links. You might need to check your API key or connection.";
+  }
+}
+
 // ----------------------------------------------------
 // MAIN WIDGET COMPONENT
 // ----------------------------------------------------
@@ -339,6 +405,8 @@ export default function ChatbotCat() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [showKeyInput, setShowKeyInput] = useState(false);
+  const [apiKeyInput, setApiKeyInput] = useState(localStorage.getItem("gemini_api_key") || "");
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -456,32 +524,51 @@ export default function ChatbotCat() {
   }, [catState, catX, catDir]);
 
   // Handle user send message
-  const handleSend = (e?: React.FormEvent) => {
+  const handleSend = async (e?: React.FormEvent) => {
     e?.preventDefault();
     if (!inputValue.trim()) return;
 
     const userText = inputValue;
-    setMessages((prev) => [
-      ...prev,
-      { sender: "user", text: userText, timestamp: new Date() },
-    ]);
+    const currentMessages = [
+      ...messages,
+      { sender: "user" as const, text: userText, timestamp: new Date() }
+    ];
+    setMessages(currentMessages);
     setInputValue("");
     setIsTyping(true);
 
     // Stop walking briefly to look like thinking
     setCatState("sitting");
 
-    setTimeout(() => {
-      const response = getBotResponse(userText);
+    const apiKey = localStorage.getItem("gemini_api_key") || import.meta.env.VITE_GEMINI_API_KEY || "";
+
+    if (apiKey) {
+      // Map message history to Gemini format (user vs model)
+      // Only send last 10 messages to save context tokens
+      const recentHistory = messages.slice(-10).map((m) => ({
+        role: m.sender === "user" ? "user" as const : "model" as const,
+        text: m.text,
+      }));
+
+      const botReply = await fetchGeminiResponse(apiKey, userText, recentHistory);
       setMessages((prev) => [
         ...prev,
-        { sender: "bot", text: response, timestamp: new Date() },
+        { sender: "bot", text: botReply, timestamp: new Date() },
       ]);
       setIsTyping(false);
-      
-      // Resume walking
       setCatState("walking");
-    }, 1200);
+    } else {
+      // Offline fallback
+      setTimeout(() => {
+        const response = getBotResponse(userText);
+        setMessages((prev) => [
+          ...prev,
+          { sender: "bot", text: response, timestamp: new Date() },
+        ]);
+        setIsTyping(false);
+        setCatState("walking");
+      }, 1200);
+    }
   };
 
   return (
@@ -517,14 +604,67 @@ export default function ChatbotCat() {
                   Pixel Assistant
                 </span>
               </div>
-              <button 
-                type="button"
-                onClick={() => setIsOpen(false)}
-                className="text-neutral-400 hover:text-white transition-colors cursor-pointer"
-              >
-                <X className="size-4" />
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowKeyInput(!showKeyInput)}
+                  className={`text-neutral-400 hover:text-white transition-colors cursor-pointer p-1 rounded-sm ${showKeyInput ? "text-[#10be7e]" : ""}`}
+                  title="Configure Gemini API Key"
+                >
+                  <Settings className="size-4" />
+                </button>
+                <button 
+                  type="button"
+                  onClick={() => setIsOpen(false)}
+                  className="text-neutral-400 hover:text-white transition-colors cursor-pointer"
+                >
+                  <X className="size-4" />
+                </button>
+              </div>
             </div>
+
+            {/* 🔑 API Key Overlay Panel */}
+            {showKeyInput && (
+              <div className="absolute top-[52px] inset-x-0 bg-zinc-950 border-b border-zinc-800 p-4 z-40 text-xs flex flex-col gap-2 rounded-b-xl shadow-lg pointer-events-auto">
+                <div className="flex items-center justify-between">
+                  <span className="font-mono font-bold uppercase tracking-wider text-[#dfefe4]">Gemini API Key</span>
+                  <button type="button" onClick={() => setShowKeyInput(false)} className="text-zinc-400 hover:text-white">✕</button>
+                </div>
+                <input
+                  type="password"
+                  placeholder="Paste your Gemini API Key here..."
+                  value={apiKeyInput}
+                  onChange={(e) => setApiKeyInput(e.target.value)}
+                  className="w-full bg-zinc-900 border border-zinc-700 rounded px-2.5 py-1.5 text-white font-mono placeholder:text-zinc-600 focus:outline-none focus:border-[#10be7e]"
+                />
+                <div className="flex gap-2 justify-end">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      localStorage.removeItem("gemini_api_key");
+                      setApiKeyInput("");
+                      setShowKeyInput(false);
+                    }}
+                    className="px-2 py-1 rounded bg-zinc-900 text-zinc-400 hover:bg-zinc-800 border border-zinc-800 cursor-pointer"
+                  >
+                    Clear
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      localStorage.setItem("gemini_api_key", apiKeyInput);
+                      setShowKeyInput(false);
+                    }}
+                    className="px-3 py-1 rounded bg-[#10be7e] text-zinc-950 font-bold hover:bg-[#34d399] cursor-pointer"
+                  >
+                    Save Key
+                  </button>
+                </div>
+                <p className="text-[10px] text-zinc-500 leading-relaxed mt-1">
+                  Key is saved locally in your browser. Leave blank to use the offline chatbot responses.
+                </p>
+              </div>
+            )}
 
             {/* Chat Messages Body */}
             <div className="flex-1 overflow-y-auto p-4 space-y-3.5 custom-scrollbar text-sm">
