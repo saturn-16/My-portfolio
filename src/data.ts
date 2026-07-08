@@ -91,7 +91,7 @@ export const WORK_EXPERIENCE_DATA: WorkExperience[] = [
     year: "2023 – 2027",
     title: "B.Tech CSE (Cybersecurity)",
     company: "VIT Bhopal University",
-    description: "Pursuing Bachelor of Technology in Computer Science with specialization in Cybersecurity. CGPA: 8.23. Focused on AI-driven threat detection, secure web systems, and full-stack development.",
+    description: "Pursuing Bachelor of Technology in Computer Science with specialization in Cybersecurity. Focused on AI-driven threat detection, secure web systems, and full-stack development.",
     skills: ["Cybersecurity", "Machine Learning", "Web Development", "Cloud Security"]
   }
 ];

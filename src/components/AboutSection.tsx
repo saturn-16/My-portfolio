@@ -92,14 +92,6 @@ export default function AboutSection() {
           </div>
         </div>
 
-        {/* CGPA */}
-        <div className="flex items-start gap-2.5">
-          <Award className="w-3.5 h-3.5 text-red-500 mt-0.5 flex-shrink-0" />
-          <div>
-            <p className="text-[9px] font-mono uppercase tracking-widest text-neutral-400">CGPA</p>
-            <p className="text-xs font-mono font-semibold text-pine">8.23</p>
-          </div>
-        </div>
 
         {/* Skills */}
         <div>
@@ -237,7 +229,7 @@ export default function AboutSection() {
                   </div>
                   <div>
                     <p className="text-[10px] font-mono font-bold text-pine">VIT Bhopal University</p>
-                    <p className="text-[9px] font-mono text-neutral-400">CGPA: 8.23</p>
+                    <p className="text-[9px] font-mono text-neutral-400">B.Tech in CSE</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3 p-3 rounded-xl bg-neutral-50 border border-sand/60">
