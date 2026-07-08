@@ -47,6 +47,7 @@ export default function AboutSection() {
   };
 
   // The ID card component (reused in both inline and modal)
+  // The ID card component (reused in both inline and modal)
   const IDCardContent = ({ isModal = false }: { isModal?: boolean }) => (
     <div
       className={`bg-white rounded-2xl border border-sand shadow-lg overflow-hidden select-none ${
@@ -75,7 +76,7 @@ export default function AboutSection() {
               Gaurav Kumar
             </h4>
             <p className="text-[10px] font-mono text-neutral-500 mt-0.5">
-              B.Tech CSE — Cybersecurity
+              B.Tech CSE - Cybersecurity
             </p>
           </div>
         </div>
@@ -91,7 +92,6 @@ export default function AboutSection() {
             <p className="text-xs font-mono font-semibold text-pine">VIT Bhopal University</p>
           </div>
         </div>
-
 
         {/* Skills */}
         <div>
@@ -112,7 +112,7 @@ export default function AboutSection() {
       {/* Card footer */}
       <div className="px-5 py-3 bg-neutral-50 border-t border-sand/60">
         <div className="flex items-center justify-between">
-          <span className="text-[8px] font-mono text-neutral-400 uppercase tracking-widest">2023 — 2027</span>
+          <span className="text-[8px] font-mono text-neutral-400 uppercase tracking-widest">2023 - 2027</span>
           <span className="text-[8px] font-mono text-red-500 font-bold uppercase tracking-widest">VERIFIED</span>
         </div>
       </div>
@@ -156,8 +156,23 @@ export default function AboutSection() {
                 }}
                 className="flex flex-col items-center"
               >
-                {/* Red lanyard string — thick, extends to category buttons level */}
-                <div className="w-1 h-[500px] bg-gradient-to-b from-red-500 to-red-400 rounded-full" />
+                {/* Red fabric Lanyard Strap */}
+                <div className="w-5 h-[400px] bg-red-600 border-x border-red-700 shadow-md relative flex flex-col items-center justify-between">
+                  {/* Woven fabric texture stripe */}
+                  <div className="absolute inset-y-0 w-1.5 bg-red-800 opacity-60" />
+                  
+                  {/* Subtle repeating micro-text on the strap */}
+                  <div className="absolute inset-y-0 flex flex-col justify-around text-[6.5px] font-mono tracking-widest text-red-200/40 select-none pointer-events-none uppercase [writing-mode:vertical-lr] font-bold">
+                    <span>CYBERSECURITY // SECURITY RESEARCH</span>
+                    <span>VIT BHOPAL UNIVERSITY // DEV</span>
+                  </div>
+                </div>
+
+                {/* Metal Clip / Carabiner hook */}
+                <div className="w-5 h-6 bg-gradient-to-b from-zinc-300 via-zinc-200 to-zinc-400 border border-zinc-400 rounded-sm shadow-md flex flex-col items-center justify-between relative -mt-0.5 z-10">
+                  <div className="w-2.5 h-2.5 rounded-full bg-zinc-700/30 border border-zinc-500/50 mt-0.5" />
+                  <div className="w-6 h-3 border-2 border-t-0 border-zinc-400 rounded-b-md" />
+                </div>
 
                 {/* Card — free pendulum swing left to right */}
                 <motion.div

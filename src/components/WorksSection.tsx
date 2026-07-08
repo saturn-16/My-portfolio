@@ -192,12 +192,9 @@ export default function WorksSection() {
 
             {/* 3. Outer Frame End Cap Tagline */}
             <div className="w-[300px] flex-shrink-0 flex flex-col justify-center pl-8 border-l border-sand h-[40vh] select-none pointer-events-none">
-              <span className="text-[10px] font-mono tracking-widest text-neutral-300 uppercase block mb-1">
-                // COMPILATION COMPLETED
-              </span>
               <p className="font-oswald text-4xl uppercase text-neutral-300 font-extrabold leading-tight">
-                SECURE<br />
-                BY DESIGN.
+                LINES OF<br />
+                LOGIC.
               </p>
             </div>
           </motion.div>

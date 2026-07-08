@@ -329,7 +329,6 @@ export default function App() {
             {/* Copyright and signature */}
             <div className="flex flex-col sm:flex-row justify-between items-center gap-4 border-t border-[#dfd9cb] pt-8 text-[10px] font-mono text-neutral-400">
               <span>© {new Date().getFullYear()} GAURAV KUMAR. ALL RIGHTS RESERVED SECTIONS PROTECTED.</span>
-              <span className="uppercase">CRAFTED WITH PRECISION // GAURAV_DEV_v1</span>
             </div>
 
           </footer>
