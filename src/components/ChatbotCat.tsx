@@ -503,6 +503,8 @@ export default function ChatbotCat() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 40, scale: 0.95 }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            onWheel={(e) => e.stopPropagation()}
+            onTouchMove={(e) => e.stopPropagation()}
             className="w-[320px] sm:w-[350px] h-[450px] rounded-2xl bg-zinc-950 border border-zinc-800 text-white shadow-2xl flex flex-col overflow-visible pointer-events-auto relative mb-3"
           >
             {/* Walking Cat Container */}
@@ -535,7 +537,7 @@ export default function ChatbotCat() {
             </div>
 
             {/* Chat Messages Body */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-3.5 custom-scrollbar text-sm">
+            <div className="flex-1 overflow-y-auto p-4 space-y-3.5 custom-scrollbar text-sm overscroll-contain">
               {messages.map((msg, idx) => (
                 <div 
                   key={idx} 
@@ -573,14 +575,14 @@ export default function ChatbotCat() {
               <span className="text-[9px] font-mono text-zinc-500 uppercase tracking-widest block mb-2 text-center select-none">
                 Select a topic to ask Pixel
               </span>
-              <div className="flex flex-wrap gap-1.5 justify-center max-h-[110px] overflow-y-auto custom-scrollbar">
+              <div className="flex flex-wrap gap-1.5 justify-center max-h-[110px] overflow-y-auto custom-scrollbar overscroll-contain">
                 {PRESETS.map((preset, idx) => (
                   <button
                     key={idx}
                     type="button"
                     onClick={() => handleQuestionSelect(preset.query)}
                     disabled={isTyping}
-                    className="px-2.5 py-1.5 text-[10px] font-mono rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:bg-zinc-800 hover:border-zinc-700 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wider font-semibold"
+                    className="px-2.5 py-1.5 text-[10px] font-mono rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:bg-zinc-850 hover:border-zinc-700 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wider font-semibold"
                   >
                     {preset.label}
                   </button>
