@@ -2,28 +2,33 @@ import { useState, useRef, useEffect } from "react";
 import { WORK_EXPERIENCE_DATA } from "../data";
 import { ArrowUpRight, Award, Briefcase, GraduationCap, Code2, Cpu, X } from "lucide-react";
 import { motion, AnimatePresence, useInView } from "motion/react";
-
-// ID Card skills (curated subset for the card)
-const ID_CARD_SKILLS = ["React", "FastAPI", "Python", "TensorFlow", "Docker", "Cybersecurity"];
+import Lanyard from "./Lanyard/Lanyard";
+import { createFrontTexture, createBackTexture } from "../utils/cardTexture";
 
 export default function AboutSection() {
   const [selectedSkillCategory, setSelectedSkillCategory] = useState("cybersecurity");
   const [showTimeline, setShowTimeline] = useState(false);
-  const [cardExpanded, setCardExpanded] = useState(false);
+  const [frontCardTexture, setFrontCardTexture] = useState<string | null>(null);
+  const [backCardTexture, setBackCardTexture] = useState<string | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+  const [showCardModal, setShowCardModal] = useState(false);
 
-  // Ref for scroll-triggered ID card animation
+  // Ref for scroll-triggered ID card animation/visibility
   const sectionRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
 
-  // Lock body scroll when card is expanded
   useEffect(() => {
-    if (cardExpanded) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => { document.body.style.overflow = ""; };
-  }, [cardExpanded]);
+    setIsMobile(window.innerWidth < 768);
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+
+    createFrontTexture("/profile.jpg").then((url) => {
+      setFrontCardTexture(url);
+    });
+    setBackCardTexture(createBackTexture());
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const skillsData = {
     cybersecurity: {
@@ -46,78 +51,13 @@ export default function AboutSection() {
     }
   };
 
-  // The ID card component (reused in both inline and modal)
-  // The ID card component (reused in both inline and modal)
-  const IDCardContent = ({ isModal = false }: { isModal?: boolean }) => (
-    <div
-      className={`bg-white rounded-2xl border border-sand shadow-lg overflow-hidden select-none ${
-        isModal ? "w-[340px] sm:w-[380px]" : "w-full max-w-[300px]"
-      }`}
-    >
-      {/* Red strip at top */}
-      <div className="h-2.5 bg-gradient-to-r from-red-500 via-red-600 to-red-700" />
+  useEffect(() => {
+    createFrontTexture("/profile.jpg").then((url) => {
+      setFrontCardTexture(url);
+    });
+    setBackCardTexture(createBackTexture());
+  }, []);
 
-      {/* Card header */}
-      <div className="px-5 pt-5 pb-3 border-b border-sand/60">
-        <span className="text-[8px] font-mono uppercase tracking-[0.2em] text-neutral-400 block mb-1">
-          STUDENT IDENTITY CARD
-        </span>
-        <div className="flex items-center gap-3">
-          {/* Mini profile placeholder */}
-          <div className="w-14 h-14 rounded-xl overflow-hidden border border-sand flex-shrink-0">
-            <img
-              src="/profile.jpg"
-              alt="Gaurav Kumar"
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <div>
-            <h4 className="text-base font-oswald font-bold uppercase text-pine tracking-wide leading-tight">
-              Gaurav Kumar
-            </h4>
-            <p className="text-[10px] font-mono text-neutral-500 mt-0.5">
-              B.Tech CSE - Cybersecurity
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Card body */}
-      <div className="px-5 py-4 space-y-3">
-        {/* College */}
-        <div className="flex items-start gap-2.5">
-          <GraduationCap className="w-3.5 h-3.5 text-red-500 mt-0.5 flex-shrink-0" />
-          <div>
-            <p className="text-[9px] font-mono uppercase tracking-widest text-neutral-400">Institute</p>
-            <p className="text-xs font-mono font-semibold text-pine">VIT Bhopal University</p>
-          </div>
-        </div>
-
-        {/* Skills */}
-        <div>
-          <p className="text-[9px] font-mono uppercase tracking-widest text-neutral-400 mb-1.5">Core Skills</p>
-          <div className="flex flex-wrap gap-1">
-            {ID_CARD_SKILLS.map((skill) => (
-              <span
-                key={skill}
-                className="text-[9px] font-mono font-medium bg-red-50 text-red-700 border border-red-200 px-2 py-0.5 rounded-sm"
-              >
-                {skill}
-              </span>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Card footer */}
-      <div className="px-5 py-3 bg-neutral-50 border-t border-sand/60">
-        <div className="flex items-center justify-between">
-          <span className="text-[8px] font-mono text-neutral-400 uppercase tracking-widest">2023 - 2027</span>
-          <span className="text-[8px] font-mono text-red-500 font-bold uppercase tracking-widest">VERIFIED</span>
-        </div>
-      </div>
-    </div>
-  );
 
   return (
     <section id="about" className="py-24 px-6 md:px-12 bg-cream-light border-b border-sand">
@@ -135,81 +75,52 @@ export default function AboutSection() {
             </h2>
           </div>
 
-          {/* ID Card drops from the hinge when section is scrolled into view */}
-          <div className="absolute top-0 right-0 xl:right-8 hidden lg:flex flex-col items-center z-20">
-            
-            {/* Hinge / circle — always visible */}
-            <div className="w-10 h-10 rounded-full bg-gradient-to-b from-red-400 to-red-600 border-2 border-red-300 shadow-lg flex items-center justify-center z-10 relative">
-              <div className="w-4 h-4 rounded-full bg-white/80 shadow-inner" />
-            </div>
-
-            {/* Clip container — hides the string+card above, reveals as it drops */}
-            <div className="overflow-hidden">
-              <motion.div
-                initial={{ y: "-100%" }}
-                animate={isInView ? { y: "0%" } : { y: "-100%" }}
-                transition={{
-                  duration: 1.4,
-                  type: "spring",
-                  damping: 14,
-                  stiffness: 50,
-                }}
-                className="flex flex-col items-center"
-              >
-                {/* Red fabric Lanyard Strap */}
-                <div className="w-5 h-[400px] bg-red-600 border-x border-red-700 shadow-md relative flex flex-col items-center justify-between">
-                  {/* Woven fabric texture stripe */}
-                  <div className="absolute inset-y-0 w-1.5 bg-red-800 opacity-60" />
-                  
-                  {/* Subtle repeating micro-text on the strap */}
-                  <div className="absolute inset-y-0 flex flex-col justify-around text-[6.5px] font-mono tracking-widest text-red-200/40 select-none pointer-events-none uppercase [writing-mode:vertical-lr] font-bold">
-                    <span>CYBERSECURITY // SECURITY RESEARCH</span>
-                    <span>VIT BHOPAL UNIVERSITY // DEV</span>
-                  </div>
+          {/* 3D Lanyard component on the right side - always visible */}
+          {frontCardTexture && backCardTexture && (
+            <>
+              {/* Desktop: Interactive 3D Lanyard on the right */}
+              <div className="absolute top-[6.5rem] right-[-6rem] xl:right-[-4rem] hidden lg:block w-[500px] h-[900px] z-20 select-none pointer-events-none">
+                <div className="w-full h-full pointer-events-auto">
+                  <Lanyard
+                    position={[0, 2, 14]}
+                    gravity={[0, -40, 0]}
+                    frontImage={frontCardTexture}
+                    backImage={backCardTexture}
+                    cardScale={2.25}
+                  />
                 </div>
-
-                {/* Metal Clip / Carabiner hook */}
-                <div className="w-5 h-6 bg-gradient-to-b from-zinc-300 via-zinc-200 to-zinc-400 border border-zinc-400 rounded-sm shadow-md flex flex-col items-center justify-between relative -mt-0.5 z-10">
-                  <div className="w-2.5 h-2.5 rounded-full bg-zinc-700/30 border border-zinc-500/50 mt-0.5" />
-                  <div className="w-6 h-3 border-2 border-t-0 border-zinc-400 rounded-b-md" />
-                </div>
-
-                {/* Card — free pendulum swing left to right */}
-                <motion.div
-                  animate={isInView ? {
-                    rotate: [0, 5, -4, 6, -5, 3, -3, 5, -2, 0],
-                  } : { rotate: 0 }}
-                  transition={{
-                    duration: 8,
-                    ease: "easeInOut",
-                    repeat: Infinity,
-                    delay: 1.5,
-                  }}
-                  style={{ transformOrigin: "top center" }}
-                  className="cursor-pointer hover:scale-[1.03] transition-transform duration-300"
-                  onClick={() => setCardExpanded(true)}
+                {/* View Card Button - Desktop */}
+                <button
+                  onClick={() => setShowCardModal(true)}
+                  className="absolute bottom-8 left-1/2 -translate-x-1/2 pointer-events-auto px-5 py-2 rounded-full bg-[#0A4F41] text-white text-sm font-medium tracking-wide shadow-lg hover:bg-[#0d6b57] hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 flex items-center gap-2"
                 >
-                  <IDCardContent />
-                  <p className="text-[9px] font-mono text-neutral-400 text-center mt-2 uppercase tracking-widest">
-                    Click to expand
-                  </p>
-                </motion.div>
-              </motion.div>
-            </div>
-          </div>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg>
+                  View Card
+                </button>
+              </div>
 
-          {/* Mobile: show card inline (no absolute positioning) */}
-          <div className="lg:hidden mt-8 flex justify-center">
-            <div
-              className="cursor-pointer"
-              onClick={() => setCardExpanded(true)}
-            >
-              <IDCardContent />
-              <p className="text-[9px] font-mono text-neutral-400 text-center mt-2 uppercase tracking-widest">
-                Tap to expand
-              </p>
-            </div>
-          </div>
+              {/* Mobile: Interactive 3D Lanyard centered below heading */}
+              <div className="lg:hidden mt-8 flex flex-col items-center w-full z-20 select-none pointer-events-none">
+                <div className="w-full h-[800px] pointer-events-auto">
+                  <Lanyard
+                    position={[0, 2, 18]}
+                    gravity={[0, -40, 0]}
+                    frontImage={frontCardTexture}
+                    backImage={backCardTexture}
+                    cardScale={2.25}
+                  />
+                </div>
+                {/* View Card Button - Mobile */}
+                <button
+                  onClick={() => setShowCardModal(true)}
+                  className="pointer-events-auto -mt-4 px-5 py-2 rounded-full bg-[#0A4F41] text-white text-sm font-medium tracking-wide shadow-lg hover:bg-[#0d6b57] active:scale-95 transition-all duration-200 flex items-center gap-2"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg>
+                  View Card
+                </button>
+              </div>
+            </>
+          )}
         </div>
 
         {/* Merged Skill Radar + Current Compass — full width below */}
@@ -314,36 +225,7 @@ export default function AboutSection() {
 
         </div>
 
-        {/* Expanded ID Card Modal Overlay */}
-        <AnimatePresence>
-          {cardExpanded && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center">
-              {/* Blurred backdrop */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                className="absolute inset-0 bg-pine-dark/40 backdrop-blur-md"
-                onClick={() => setCardExpanded(false)}
-              />
 
-              {/* Card zoomed in */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.6, y: 40 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.6, y: 40 }}
-                transition={{ type: "spring", damping: 22, stiffness: 200 }}
-                className="relative z-10"
-              >
-                <IDCardContent isModal />
-                <p className="text-[10px] font-mono text-white/60 text-center mt-4 uppercase tracking-widest">
-                  Click anywhere outside to close
-                </p>
-              </motion.div>
-            </div>
-          )}
-        </AnimatePresence>
 
         {/* Sliding Timeline Resume Drawer */}
         <AnimatePresence>
@@ -469,6 +351,44 @@ export default function AboutSection() {
             </div>
           )}
         </AnimatePresence>
+
+      {/* Card Zoom Modal */}
+      <AnimatePresence>
+        {showCardModal && frontCardTexture && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-[9999] flex items-center justify-center cursor-pointer"
+            style={{ backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', backgroundColor: 'rgba(0, 0, 0, 0.6)' }}
+            onClick={() => setShowCardModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.7, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.7, opacity: 0 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              className="relative cursor-default"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <img
+                src={frontCardTexture}
+                alt="Gaurav Kumar - Portfolio Card"
+                className="rounded-2xl shadow-2xl border border-white/10"
+                style={{ maxHeight: '80vh', maxWidth: '90vw', width: 'auto', height: 'auto' }}
+              />
+              <button
+                onClick={() => setShowCardModal(false)}
+                className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-white/90 hover:bg-white flex items-center justify-center shadow-lg transition-colors"
+              >
+                <X size={16} className="text-gray-800" />
+              </button>
+              <p className="text-center text-white/50 text-sm mt-4 font-mono">Click anywhere to close</p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       </div>
     </section>
