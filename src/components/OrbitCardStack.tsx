@@ -14,6 +14,16 @@ export interface OrbitStackItem {
 
 const defaultItems: OrbitStackItem[] = [
   {
+    name: "Certified AI Practitioner",
+    role: "Amazon Web Services",
+    description: "Validates foundational knowledge of AI/ML concepts, generative AI workloads, responsible AI practices, and real-world applications of AWS AI services including SageMaker, Bedrock, and Rekognition.",
+    accent: "#8b5cf6",
+    initials: "AIF",
+    stat: "2026",
+    tags: ["AI/ML", "Generative AI", "SageMaker", "Responsible AI"],
+    logo: "/logos/aws.svg"
+  },
+  {
     name: "IT Support Professional",
     role: "Google",
     description: "Validates core system administration, network configurations, troubleshooting automation protocols, Linux terminal commands, and secure active directory management.",
@@ -41,7 +51,7 @@ const defaultItems: OrbitStackItem[] = [
     initials: "AWS",
     stat: "2025",
     tags: ["IAM Roles", "S3 Storage", "EC2 Compute", "AWS Cloud"],
-    logo: "https://www.vectorlogo.zone/logos/amazon_aws/amazon_aws-icon.svg"
+    logo: "/logos/aws.svg"
   },
   {
     name: "Intro to Cybersecurity",
@@ -118,7 +128,7 @@ export default function OrbitCardStackSection() {
   const spread = 175;
   const lift = 30;
 
-  const defaultActiveIndex = 1; // Generative AI Card centered initially
+  const defaultActiveIndex = 2; // Center card in 5-card stack
   const defaultIndex = clampIndex(defaultActiveIndex, items.length);
   const [expanded, setExpanded] = useState(false);
   const [activeIndex, setActiveIndex] = useState(defaultIndex);
