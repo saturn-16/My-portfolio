@@ -141,23 +141,23 @@ export async function createFrontTexture(profileImgUrl: string): Promise<string>
       ctx.lineTo(W - 32, projY + 8);
       ctx.stroke();
 
-      // Project 1
+      // Project 1 - CyberSphere
       const p1Y = projY + 28;
       ctx.fillStyle = '#2A2A2A';
       ctx.font = `bold 12px ${fontStack}`;
-      ctx.fillText('Phishing URL Detector', 32, p1Y);
+      ctx.fillText('CyberSphere', 32, p1Y);
       ctx.fillStyle = '#6E6E6E';
       ctx.font = `400 10px ${fontStack}`;
-      ctx.fillText('AI-powered threat detection with 97% accuracy', 32, p1Y + 16);
+      ctx.fillText('Full-stack cybersecurity SaaS platform with AI scoring', 32, p1Y + 16);
 
-      // Project 2
+      // Project 2 - YouTube Guardian
       const p2Y = p1Y + 42;
       ctx.fillStyle = '#2A2A2A';
       ctx.font = `bold 12px ${fontStack}`;
-      ctx.fillText('Portfolio Website', 32, p2Y);
+      ctx.fillText('YouTube Guardian', 32, p2Y);
       ctx.fillStyle = '#6E6E6E';
       ctx.font = `400 10px ${fontStack}`;
-      ctx.fillText('3D interactive site with React Three Fiber', 32, p2Y + 16);
+      ctx.fillText('Real-time live chat threat detection & link analysis', 32, p2Y + 16);
 
       // Project 3 - GIS
       const p3Y = p2Y + 42;
