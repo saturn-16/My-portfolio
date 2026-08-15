@@ -142,13 +142,13 @@ export default function AboutSection() {
                 <div className="flex-1">
                   <h4 className="text-base font-mono uppercase font-bold text-pine mb-2">Gaurav Kumar</h4>
                   <p className="text-xs font-mono text-neutral-600 leading-relaxed">
-                    B.Tech CSE (Cybersecurity) student at VIT Bhopal University, specializing in AI-driven threat detection and secure web systems. Currently working as a Frontend Intern at Agnivora Digital.
+                    B.Tech CSE (Cybersecurity) student at VIT Bhopal University, specializing in AI-driven threat detection and secure web systems. Currently working as a Frontend Intern at Agnivora Digital and completed a ServiceNow Developer Internship.
                   </p>
                 </div>
               </div>
 
               {/* Quick stats row */}
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="flex items-start gap-3 p-3 rounded-xl bg-neutral-50 border border-sand/60">
                   <div className="p-1.5 bg-pine/10 rounded-lg text-pine">
                     <GraduationCap className="w-3.5 h-3.5" />
@@ -165,6 +165,15 @@ export default function AboutSection() {
                   <div>
                     <p className="text-[10px] font-mono font-bold text-pine">Agnivora Digital</p>
                     <p className="text-[9px] font-mono text-neutral-400">Frontend Intern</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 p-3 rounded-xl bg-neutral-50 border border-sand/60">
+                  <div className="p-1.5 bg-pine/10 rounded-lg text-pine">
+                    <Briefcase className="w-3.5 h-3.5" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-mono font-bold text-pine">ServiceNow</p>
+                    <p className="text-[9px] font-mono text-neutral-400">Developer Intern</p>
                   </div>
                 </div>
               </div>
