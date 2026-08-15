@@ -18,8 +18,7 @@ export default function ContactDrawer({ isOpen, onClose }: ContactDrawerProps) {
   });
 
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
-  const [step, setStep] = useState<"input" | "transmitting" | "success">("input");
-  const [logLines, setLogLines] = useState<string[]>([]);
+  const [step, setStep] = useState<"input" | "transmitting" | "success" | "error">("input");
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -49,23 +48,8 @@ export default function ContactDrawer({ isOpen, onClose }: ContactDrawerProps) {
     if (!validateForm()) return;
 
     setStep("transmitting");
-    setLogLines(["⚡ INIT: Connecting to secure relay broker..."]);
-
-    const appendLog = (line: string, delay: number) => {
-      return new Promise<void>((resolve) => {
-        setTimeout(() => {
-          setLogLines((prev) => [...prev, line]);
-          resolve();
-        }, delay);
-      });
-    };
 
     try {
-      await appendLog("✔ SOCKET: Secure TLS pipe established.", 450);
-      await appendLog(`ℹ PAYLOAD: Parsing parameters for { name: '${formData.name}' }`, 450);
-      await appendLog("⚙ COMPILING: Packing email payload into JSON structure...", 450);
-      await appendLog("☁ ROUTING: Sending SMTP relay request to gk16122004@gmail.com...", 450);
-
       const response = await fetch("https://formsubmit.co/ajax/gk16122004@gmail.com", {
         method: "POST",
         headers: {
@@ -83,17 +67,12 @@ export default function ContactDrawer({ isOpen, onClose }: ContactDrawerProps) {
       });
 
       if (response.ok) {
-        await appendLog("✔ DISPATCH: Message queued on Gaurav's inbox broker.", 450);
-        await appendLog("✨ COMPLETED: Transmission successful. Status: 200 OK", 450);
-        setTimeout(() => {
-          setStep("success");
-        }, 800);
+        setStep("success");
       } else {
         throw new Error(`Server returned status ${response.status}`);
       }
     } catch (err) {
-      await appendLog("❌ ERROR: Socket transmission failed.", 450);
-      await appendLog("❌ FAILED: Please check connection and try again.", 450);
+      setStep("error");
     }
   };
 
@@ -107,7 +86,6 @@ export default function ContactDrawer({ isOpen, onClose }: ContactDrawerProps) {
       message: ""
     });
     setStep("input");
-    setLogLines([]);
   };
 
   return (
@@ -273,39 +251,11 @@ export default function ContactDrawer({ isOpen, onClose }: ContactDrawerProps) {
                 </form>
               )}
 
-              {/* Transmitting Terminal Monitor Screen */}
+              {/* Transmitting Loading Screen */}
               {step === "transmitting" && (
-                <div className="p-4 bg-zinc-950 border border-zinc-800 text-zinc-100 rounded-2xl font-mono text-[10px] leading-relaxed space-y-2 h-72 flex flex-col justify-between overflow-hidden">
-                  <div>
-                    <div className="flex items-center gap-2 border-b border-zinc-800 pb-2 mb-2 text-zinc-400">
-                      <Terminal className="w-3.5 h-3.5 text-emerald-500 animate-pulse" />
-                      <span>transmit_brokerd.sh // GAURAV RELAY SOCKET</span>
-                    </div>
-                    <div className="space-y-1 overflow-y-auto max-h-56">
-                      {logLines.map((line, idx) => (
-                        <p key={idx} className="tracking-wide">
-                          {line}
-                        </p>
-                      ))}
-                    </div>
-                  </div>
-                  {logLines.some((l) => l.includes("ERROR")) ? (
-                    <div className="flex justify-between w-full">
-                      <span className="text-rose-500 uppercase text-[8px] font-bold">Transmission Aborted</span>
-                      <button
-                        type="button"
-                        onClick={() => setStep("input")}
-                        className="text-emerald-400 hover:text-emerald-300 uppercase text-[8px] font-bold underline cursor-pointer bg-transparent border-none"
-                      >
-                        [ Go Back & Retry ]
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="text-zinc-500 flex justify-between uppercase text-[8px] animate-pulse">
-                      <span>Broker: Active</span>
-                      <span>Txs: {logLines.length}/8</span>
-                    </div>
-                  )}
+                <div className="py-20 flex flex-col items-center justify-center text-center space-y-4">
+                  <div className="w-12 h-12 border-4 border-pine border-t-transparent rounded-full animate-spin"></div>
+                  <p className="text-xs font-mono text-neutral-600 animate-pulse">Sending your request...</p>
                 </div>
               )}
 
@@ -320,14 +270,11 @@ export default function ContactDrawer({ isOpen, onClose }: ContactDrawerProps) {
                     <CheckCircle2 className="w-10 h-10" />
                   </div>
                   <div>
-                    <span className="text-[9px] font-mono text-emerald-600 font-bold bg-emerald-50 px-2.5 py-1 rounded-sm border border-emerald-100 uppercase tracking-widest block w-max mx-auto mb-3">
-                      STATUS // COMPLETED 201 OK
-                    </span>
                     <h3 className="text-2xl font-oswald text-pine uppercase font-extrabold tracking-wide mb-2">
-                      Transmission Success
+                      Request successfully sent!
                     </h3>
                     <p className="max-w-xs text-xs font-mono text-neutral-600 leading-relaxed mx-auto">
-                      Your creative dispatch packet has successfully hit Gaurav&apos;s digital queue. Expect response mapping in 12-24 hours.
+                      Thank you for reaching out. Your message has been sent to Gaurav&apos;s email address. Expect a response shortly.
                     </p>
                   </div>
 
@@ -343,6 +290,36 @@ export default function ContactDrawer({ isOpen, onClose }: ContactDrawerProps) {
                       className="flex-1 px-5 py-3 bg-pine hover:bg-pine-light text-cream rounded-xl text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer"
                     >
                       Close Window
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Error Result Screen */}
+              {step === "error" && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="py-12 flex flex-col items-center justify-center text-center space-y-6"
+                >
+                  <div className="w-20 h-20 bg-rose-50 border border-rose-100 rounded-full flex items-center justify-center text-rose-500">
+                    <AlertTriangle className="w-10 h-10" />
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-oswald text-rose-600 uppercase font-extrabold tracking-wide mb-2">
+                      Sending Failed
+                    </h3>
+                    <p className="max-w-xs text-xs font-mono text-neutral-600 leading-relaxed mx-auto">
+                      Something went wrong while transmitting your request. Please check your internet connection or email directly at gk16122004@gmail.com.
+                    </p>
+                  </div>
+
+                  <div className="pt-4 flex w-full gap-4">
+                    <button
+                      onClick={() => setStep("input")}
+                      className="flex-1 px-5 py-3 bg-pine hover:bg-pine-light text-cream rounded-xl text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer"
+                    >
+                      Back & Retry
                     </button>
                   </div>
                 </motion.div>
