@@ -302,6 +302,10 @@ export default function AboutSection() {
                     </h4>
                     <div className="text-[10px] font-mono text-neutral-600 space-y-2">
                       <div className="flex justify-between border-b border-neutral-100 pb-1">
+                        <span>Oracle Certified Foundations Associate</span>
+                        <span className="text-pine font-semibold">2026</span>
+                      </div>
+                      <div className="flex justify-between border-b border-neutral-100 pb-1">
                         <span>AWS Certified AI Practitioner</span>
                         <span className="text-pine font-semibold">2026</span>
                       </div>

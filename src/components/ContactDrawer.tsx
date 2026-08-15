@@ -44,37 +44,56 @@ export default function ContactDrawer({ isOpen, onClose }: ContactDrawerProps) {
     return Object.keys(errors).length === 0;
   };
 
-  const executeTransmitSimulation = () => {
-    setStep("transmitting");
-    setLogLines([]);
-
-    const logs = [
-      "⚡ INIT: Gaurav Delivery Socket connecting...",
-      "✔ SOCKET: Secure TLS/Websocket pipe established.",
-      `ℹ PAYLOAD: Parsing form parameters { name: '${formData.name}' }`,
-      "⚙ COMPILING: Packing email payload into JSON structure...",
-      "☁ ROUTING: Sending SMTP relay request to Bhopal digital node...",
-      "⏳ LATENCY: Ping response received at 34ms.",
-      "✔ DISPATCH: Message queued on Gaurav's inbox broker.",
-      "✨ COMPLETED: Transmission successful. Response status: 201 OK"
-    ];
-
-    logs.forEach((line, idx) => {
-      setTimeout(() => {
-        setLogLines((prev) => [...prev, line]);
-        if (idx === logs.length - 1) {
-          setTimeout(() => {
-            setStep("success");
-          }, 800);
-        }
-      }, (idx + 1) * 450);
-    });
-  };
-
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (validateForm()) {
-      executeTransmitSimulation();
+    if (!validateForm()) return;
+
+    setStep("transmitting");
+    setLogLines(["⚡ INIT: Connecting to secure relay broker..."]);
+
+    const appendLog = (line: string, delay: number) => {
+      return new Promise<void>((resolve) => {
+        setTimeout(() => {
+          setLogLines((prev) => [...prev, line]);
+          resolve();
+        }, delay);
+      });
+    };
+
+    try {
+      await appendLog("✔ SOCKET: Secure TLS pipe established.", 450);
+      await appendLog(`ℹ PAYLOAD: Parsing parameters for { name: '${formData.name}' }`, 450);
+      await appendLog("⚙ COMPILING: Packing email payload into JSON structure...", 450);
+      await appendLog("☁ ROUTING: Sending SMTP relay request to gk16122004@gmail.com...", 450);
+
+      const response = await fetch("https://formsubmit.co/ajax/gk16122004@gmail.com", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify({
+          Name: formData.name,
+          Email: formData.email,
+          Agency: formData.agency || "Not Specified",
+          ProjectScope: formData.needs,
+          EstimatedBudget: formData.budget,
+          Message: formData.message
+        })
+      });
+
+      if (response.ok) {
+        await appendLog("✔ DISPATCH: Message queued on Gaurav's inbox broker.", 450);
+        await appendLog("✨ COMPLETED: Transmission successful. Status: 200 OK", 450);
+        setTimeout(() => {
+          setStep("success");
+        }, 800);
+      } else {
+        throw new Error(`Server returned status ${response.status}`);
+      }
+    } catch (err) {
+      await appendLog("❌ ERROR: Socket transmission failed.", 450);
+      await appendLog("❌ FAILED: Please check connection and try again.", 450);
     }
   };
 
@@ -147,7 +166,7 @@ export default function ContactDrawer({ isOpen, onClose }: ContactDrawerProps) {
                       name="name"
                       value={formData.name}
                       onChange={handleInputChange}
-                      placeholder="e.g. Leslie Alexander"
+                      placeholder="e.g. John Doe"
                       className={`w-full bg-white px-3.5 py-2.5 rounded-xl border font-mono text-xs focus:ring-1 focus:ring-pine focus:border-pine outline-hidden transition-all ${
                         formErrors.name ? "border-rose-300" : "border-sand text-pine"
                       }`}
@@ -167,7 +186,7 @@ export default function ContactDrawer({ isOpen, onClose }: ContactDrawerProps) {
                       name="email"
                       value={formData.email}
                       onChange={handleInputChange}
-                      placeholder="e.g. leslie@opistudio.com"
+                      placeholder="e.g. youremail@domain.com"
                       className={`w-full bg-white px-3.5 py-2.5 rounded-xl border font-mono text-xs focus:ring-1 focus:ring-pine focus:border-pine outline-hidden transition-all ${
                         formErrors.email ? "border-rose-300" : "border-sand text-pine"
                       }`}
@@ -187,7 +206,7 @@ export default function ContactDrawer({ isOpen, onClose }: ContactDrawerProps) {
                       name="agency"
                       value={formData.agency}
                       onChange={handleInputChange}
-                      placeholder="e.g. Opi Studio"
+                      placeholder="e.g. Acme Corp"
                       className="w-full bg-white border border-sand text-pine px-3.5 py-2.5 rounded-xl font-mono text-xs focus:ring-1 focus:ring-pine focus:border-pine outline-hidden transition-all"
                     />
                   </div>
@@ -270,10 +289,23 @@ export default function ContactDrawer({ isOpen, onClose }: ContactDrawerProps) {
                       ))}
                     </div>
                   </div>
-                  <div className="text-zinc-500 flex justify-between uppercase text-[8px] animate-pulse">
-                    <span>Broker: Active</span>
-                    <span>Txs: {logLines.length}/8</span>
-                  </div>
+                  {logLines.some((l) => l.includes("ERROR")) ? (
+                    <div className="flex justify-between w-full">
+                      <span className="text-rose-500 uppercase text-[8px] font-bold">Transmission Aborted</span>
+                      <button
+                        type="button"
+                        onClick={() => setStep("input")}
+                        className="text-emerald-400 hover:text-emerald-300 uppercase text-[8px] font-bold underline cursor-pointer bg-transparent border-none"
+                      >
+                        [ Go Back & Retry ]
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="text-zinc-500 flex justify-between uppercase text-[8px] animate-pulse">
+                      <span>Broker: Active</span>
+                      <span>Txs: {logLines.length}/8</span>
+                    </div>
+                  )}
                 </div>
               )}
 

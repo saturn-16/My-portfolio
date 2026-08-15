@@ -14,6 +14,16 @@ export interface OrbitStackItem {
 
 const defaultItems: OrbitStackItem[] = [
   {
+    name: "Oracle Certified Foundations Associate",
+    role: "Oracle University",
+    description: "Validates core competencies in agentic AI foundations, autonomous OCI systems design, enterprise workflow orchestration, and generative AI deployments.",
+    accent: "#F80000",
+    initials: "ORA",
+    stat: "2026",
+    tags: ["Agentic AI", "OCI Cloud", "AI Foundations", "Enterprise AI"],
+    logo: "/logos/oracle.svg"
+  },
+  {
     name: "Certified AI Practitioner",
     role: "Amazon Web Services",
     description: "Validates foundational knowledge of AI/ML concepts, generative AI workloads, responsible AI practices, and real-world applications of AWS AI services including SageMaker, Bedrock, and Rekognition.",
@@ -128,7 +138,7 @@ export default function OrbitCardStackSection() {
   const spread = 175;
   const lift = 30;
 
-  const defaultActiveIndex = 2; // Center card in 5-card stack
+  const defaultActiveIndex = 2; // Center card in 6-card stack
   const defaultIndex = clampIndex(defaultActiveIndex, items.length);
   const [expanded, setExpanded] = useState(false);
   const [activeIndex, setActiveIndex] = useState(defaultIndex);
