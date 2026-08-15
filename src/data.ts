@@ -71,6 +71,14 @@ export const PROJECTS_DATA: Project[] = [
 
 export const WORK_EXPERIENCE_DATA: WorkExperience[] = [
   {
+    id: "exp_servicenow",
+    year: "June 2026 – August 2026",
+    title: "ServiceNow Developer Intern",
+    company: "ServiceNow (Virtual Internship)",
+    description: "Completed ServiceNow Virtual Internship under SmartBridge & AICTE. Built and configured workflow automations, custom reports, flow diagrams, and automated test framework (ATF) suites. Gained exposure to ITSM fundamentals and Agentic AI integrations on the ServiceNow platform.",
+    skills: ["ServiceNow Admin", "ATF Testing", "Flow Designer", "Agentic AI", "ITSM"]
+  },
+  {
     id: "exp1",
     year: "May 2026 – July 2026",
     title: "Frontend Intern",

@@ -14,6 +14,16 @@ export interface OrbitStackItem {
 
 const defaultItems: OrbitStackItem[] = [
   {
+    name: "ServiceNow System Admin",
+    role: "ServiceNow University",
+    description: "Validates ServiceNow administration fundamentals, automated flows, Automated Test Framework (ATF) suites, custom reporting, and Agentic AI integrations.",
+    accent: "#00d182",
+    initials: "NOW",
+    stat: "2026",
+    tags: ["ServiceNow Admin", "ATF Testing", "Flow Designer", "Agentic AI"],
+    logo: "/logos/servicenow.svg"
+  },
+  {
     name: "Oracle Certified Foundations Associate",
     role: "Oracle University",
     description: "Validates core competencies in agentic AI foundations, autonomous OCI systems design, enterprise workflow orchestration, and generative AI deployments.",
@@ -138,7 +148,7 @@ export default function OrbitCardStackSection() {
   const spread = 175;
   const lift = 30;
 
-  const defaultActiveIndex = 2; // Center card in 6-card stack
+  const defaultActiveIndex = 3; // Center card in 7-card stack
   const defaultIndex = clampIndex(defaultActiveIndex, items.length);
   const [expanded, setExpanded] = useState(false);
   const [activeIndex, setActiveIndex] = useState(defaultIndex);
