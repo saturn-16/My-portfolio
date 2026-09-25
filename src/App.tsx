@@ -193,8 +193,8 @@ export default function App() {
                   Send Request <ArrowUpRight className="w-3.5 h-3.5" />
                 </button>
                 <a
-                  href="/Gaurav_Kumar_Resume.pdf"
-                  download="Gaurav_Kumar_Resume.pdf"
+                  href="/new_resume4.pdf"
+                  download="new_resume4.pdf"
                   className="inline-flex items-center gap-2 px-6 py-3.5 bg-white hover:bg-neutral-100 text-pine rounded-full text-xs font-mono font-bold tracking-widest uppercase cursor-pointer hover:scale-105 transition-all border border-sand shadow-sm"
                 >
                   Download CV <ArrowUpRight className="w-3.5 h-3.5 text-pine-light" />

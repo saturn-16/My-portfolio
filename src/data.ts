@@ -8,6 +8,8 @@ export const GAURAV_BIO = {
   location: "Bhopal, MP, India",
   email: "gk16122004@gmail.com",
   phone: "+91-9810817335",
+  resumeUrl: "https://drive.google.com/file/d/1xa1MVXetgOKw-Y8ya01zulA9w8JgTGYj/view?usp=sharing",
+  resumeFile: "/new_resume4.pdf",
   socials: {
     github: "https://github.com/saturn-16",
     linkedin: "https://www.linkedin.com/in/gaur4avkumar/",

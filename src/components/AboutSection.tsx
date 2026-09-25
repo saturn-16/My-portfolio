@@ -348,8 +348,8 @@ export default function AboutSection() {
                   <span className="text-[10px] font-mono text-neutral-400">LOCALTIME IST // GO ATTAIN EXCELLENCE</span>
                   <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
                     <a
-                      href="/Gaurav_Kumar_Resume.pdf"
-                      download="Gaurav_Kumar_Resume.pdf"
+                      href="/new_resume4.pdf"
+                      download="new_resume4.pdf"
                       className="flex items-center justify-center gap-2 bg-neutral-100 hover:bg-neutral-200 border border-sand px-5 py-2.5 rounded-xl text-xs font-mono tracking-widest uppercase text-pine transition-colors cursor-pointer w-full sm:w-auto text-center"
                     >
                       Download CV <ArrowUpRight className="w-3.5 h-3.5 text-pine-light" />
